@@ -17,6 +17,10 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildFeatures {
+        viewBinding = true
+
+    }
 
     buildTypes {
         release {
@@ -43,6 +47,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
     kapt ("androidx.room:room-compiler:2.6.1")
@@ -57,7 +63,15 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("org.osmdroid:osmdroid-mapsforge:6.1.18")
-
+    // --- Lifecycle: ViewModel, LiveData ---
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     // Geocoding/Nominatim API for location search
     implementation("com.github.MKergall:osmbonuspack:6.9.0") // Includes Nominatim client
+    // --- Material Design & AppCompat ---
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+
+// --- Optional: WorkManager for alerts ---
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
 }
