@@ -51,6 +51,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.room.common.jvm)
     kapt ("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
@@ -74,4 +75,6 @@ dependencies {
 
 // --- Optional: WorkManager for alerts ---
     implementation ("androidx.work:work-runtime-ktx:2.9.0")
+
+    implementation ("com.airbnb.android:lottie:6.3.0")
 }

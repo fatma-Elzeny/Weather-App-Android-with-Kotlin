@@ -1,5 +1,7 @@
 package com.example.weatherapp.data.network
 
+import com.example.weatherapp.data.model.WeatherResponse
+
 class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) : WeatherRemoteDataSource {
     override suspend fun getWeatherForecast(
         lat: Double,
