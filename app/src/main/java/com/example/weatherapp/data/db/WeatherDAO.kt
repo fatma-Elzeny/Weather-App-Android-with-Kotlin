@@ -7,12 +7,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.weatherapp.data.model.CachedWeather
+import com.example.weatherapp.data.model.FavoriteLocation
+import com.example.weatherapp.data.model.WeatherAlert
+
 @Dao
-class WeatherDAO {
-    // Favorites
+interface WeatherDAO {
+
+    // ----- Favorites -----
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFavorite(location: FavoriteLocation)
-
 
     @Delete
     suspend fun deleteFavorite(location: FavoriteLocation)
@@ -20,7 +24,7 @@ class WeatherDAO {
     @Query("SELECT * FROM favorites")
     fun getAllFavorites(): LiveData<List<FavoriteLocation>>
 
-    // Alerts
+    // ----- Alerts -----
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlert(alert: WeatherAlert)
 
@@ -30,5 +34,13 @@ class WeatherDAO {
     @Query("SELECT * FROM alerts")
     fun getAllAlerts(): LiveData<List<WeatherAlert>>
 
-}
+    // ----- Cached Weather -----
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCachedWeather(weather: CachedWeather)
+
+    @Query("SELECT * FROM cached_weather WHERE cityName = :city")
+    suspend fun getCachedWeather(city: String): CachedWeather?
+
+    @Query("DELETE FROM cached_weather WHERE cityName = :city")
+    suspend fun deleteCachedWeather(city: String)
 }
