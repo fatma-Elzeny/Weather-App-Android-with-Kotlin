@@ -51,6 +51,7 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")
+    implementation(libs.play.services.location)
     kapt ("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")

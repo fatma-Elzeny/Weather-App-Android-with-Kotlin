@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SwitchCompat
 
 class InitialSetupDialog(
     private val context: Context,
+    private val onRequestPermission: () -> Unit,
     private val onComplete: () -> Unit
 ) {
     fun show() {
@@ -35,7 +36,11 @@ class InitialSetupDialog(
                 .apply()
 
             dialog.dismiss()
-            onComplete()
+            if (isGps) {
+                onRequestPermission()
+            } else {
+                onComplete()
+            }
         }
 
         dialog.show()
