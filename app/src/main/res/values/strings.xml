@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AirCast</string>
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>

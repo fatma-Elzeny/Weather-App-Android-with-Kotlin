@@ -2,4 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+        <!-- Primary Sky Blue Theme -->
+        <color name="sky_blue_100">#E0F7FA</color>
+        <color name="sky_blue_300">#4DD0E1</color>
+        <color name="sky_blue_500">#00BCD4</color>
+        <color name="sky_blue_700">#0097A7</color>
+
+        <!-- Supporting Colors -->
+        <color name="accent_blue">#03A9F4</color>
+        <color name="light_gray">#F5F5F5</color>
+        <color name="medium_gray">#B0BEC5</color>
+        <color name="dark_gray">#263238</color>
+
+        <!-- Dialog and Text Colors -->
+        <color name="dialog_background">#121212</color> <!-- for dark dialog -->
+        <color name="text_primary">#FFFFFF</color>
+        <color name="text_secondary">#B0BEC5</color>
+
+
 </resources>

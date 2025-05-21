@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.preference.PreferenceManager
 import android.view.WindowManager
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -24,8 +25,18 @@ class SplashActivity : AppCompatActivity() {
 
         // Delay to simulate splash (or load config, check login, etc.)
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }, 2000) // 2 seconds
+            val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+            if (!prefs.contains("location_mode")) {
+                // First-time setup
+                InitialSetupDialog(this) {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                }.show()
+            } else {
+                // Already set up
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
+        }, 1500)
     }
 }
