@@ -36,6 +36,7 @@ import com.example.weatherapp.data.network.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repo.WeatherRepositoryImpl
 import com.example.weatherapp.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -168,13 +169,11 @@ class MainActivity : AppCompatActivity() {
     private fun updateForecastLists(items: List<ForecastItem>) {
         val currentTime = System.currentTimeMillis() / 1000
 
-        // Hourly forecast (today's passed hours)
-        val hourlyItems = items.filter {
-            isToday(it.dateTime) && it.timestamp <= currentTime
-        }
+        // Filter all items for today (local time)
+        val hourlyItems = items.filter { isToday(it.timestamp) }
         hourlyAdapter.submitList(hourlyItems)
 
-        // Daily forecast with accurate min/max
+        // Daily forecast logic remains the same
         dailyAdapter.submitList(processDailyForecast(items))
     }
 
@@ -195,9 +194,14 @@ class MainActivity : AppCompatActivity() {
             .sortedBy { it.timestamp }
     }
 
-    private fun isToday(dateString: String): Boolean {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return dateString.startsWith(sdf.format(Date()))
+    private fun isToday(timestamp: Long): Boolean {
+        val calendar = Calendar.getInstance(TimeZone.getDefault()) // Use device's time zone
+        val today = calendar.apply { time = Date() }.get(Calendar.DAY_OF_YEAR)
+
+        calendar.time = Date(timestamp * 1000)
+        val itemDay = calendar.get(Calendar.DAY_OF_YEAR)
+
+        return today == itemDay
     }
 
     private fun formatDateTime(timestamp: Long, pattern: String): String {
