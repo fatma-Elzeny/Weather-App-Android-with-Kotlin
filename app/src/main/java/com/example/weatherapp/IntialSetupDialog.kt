@@ -2,6 +2,8 @@ package com.example.weatherapp
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.widget.Button
@@ -36,13 +38,17 @@ class InitialSetupDialog(
                 .apply()
 
             dialog.dismiss()
-            if (isGps) {
-                onRequestPermission()
-            } else {
-                onComplete()
-            }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                if (isGps) {
+                    onRequestPermission()
+                } else {
+                    onComplete()
+                }
+            }, 150)
         }
 
         dialog.show()
     }
 }
+

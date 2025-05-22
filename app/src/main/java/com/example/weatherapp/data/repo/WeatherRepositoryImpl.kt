@@ -1,6 +1,7 @@
 package com.example.weatherapp.data.repo
 
 import androidx.lifecycle.LiveData
+import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.data.db.WeatherLocalDataSource
 import com.example.weatherapp.data.model.CachedWeather
 import com.example.weatherapp.data.model.FavoriteLocation
@@ -22,8 +23,7 @@ class WeatherRepositoryImpl(
         units: String
     ): WeatherResponse {
         val response = remote.getWeatherForecast(
-            lat, lon, units,
-            apiKey = TODO()
+            lat, lon, units, "0227d528304276aa7b3f837f13e1fd21"
         )
         saveCachedWeather(response)
         return response

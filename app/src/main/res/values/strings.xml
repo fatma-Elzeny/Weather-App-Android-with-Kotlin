@@ -4,4 +4,17 @@
     <style name="CustomDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
+
+        <string name="humidity">Humidity</string>
+        <string name="wind">Wind</string>
+        <string name="pressure">Pressure</string>
+        <string name="hourly_forecast">Hourly Forecast</string>
+        <string name="daily_forecast">5-Day Forecast</string>
+    <!-- Added in strings.xml -->
+        <string name="temperature_format">%d°</string>
+        <string name="percentage_format">%d%%</string>
+        <string name="pressure_format">%d hPa</string>
+        <string name="speed_format">%d km/h</string>
+
 </resources>

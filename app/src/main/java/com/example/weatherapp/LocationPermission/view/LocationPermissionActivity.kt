@@ -4,15 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.LocationPermission.viewmodel.LocationViewModel
 import com.example.weatherapp.LocationPermission.viewmodel.LocationViewModelFactory
-import com.example.weatherapp.MainActivity
+import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.R
 
 class LocationPermissionActivity : AppCompatActivity() {

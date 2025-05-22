@@ -1,58 +1,64 @@
 package com.example.weatherapp
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.preference.PreferenceManager
 import android.view.WindowManager
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.LocationPermission.view.LocationPermissionActivity
-
 class SplashActivity : AppCompatActivity() {
+
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                goToMain()
             } else {
                 startActivity(Intent(this, LocationPermissionActivity::class.java))
                 finish()
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Optional: make full screen
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-
         setContentView(R.layout.activity_splash)
 
-        // Delay to simulate splash (or load config, check login, etc.)
         Handler(Looper.getMainLooper()).postDelayed({
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-            if (!prefs.contains("location_mode")) {
-                InitialSetupDialog(
-                    context = this,
-                    onRequestPermission = {
-                        permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    },
-                    onComplete = {
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
-                    }
-                ).show()
+            val locationMode = prefs.getString("location_mode", null)
+
+            if (locationMode == null) {
+                showInitialSetup()
             } else {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                goToMain()
             }
-        }, 2000)
+        }, 1500)
+    }
+
+    private fun showInitialSetup() {
+        InitialSetupDialog(
+            context = this,
+            onRequestPermission = {
+                permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            },
+            onComplete = {
+                goToMain()
+            }
+        ).show()
+    }
+
+    private fun goToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

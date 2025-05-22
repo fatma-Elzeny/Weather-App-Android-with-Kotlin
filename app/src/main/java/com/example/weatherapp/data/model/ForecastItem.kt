@@ -3,13 +3,9 @@ package com.example.weatherapp.data.model
 import com.google.gson.annotations.SerializedName
 
 data class ForecastItem (
-    val dt: Long,
-    val main: MainData,
-    val weather: List<Weather>,
-    val clouds: Clouds,
-    val wind: Wind,
-    val visibility: Int,
-    val pop: Double,
-    val sys: Sys,
+    @SerializedName("dt") val timestamp: Long,
+    @SerializedName("main") val main: MainData,
+    @SerializedName("weather") val weather: List<Weather>,
+    @SerializedName("wind") val wind: Wind,
     @SerializedName("dt_txt") val dateTime: String
 )

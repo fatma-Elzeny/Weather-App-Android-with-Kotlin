@@ -19,5 +19,10 @@
         <color name="text_primary">#FFFFFF</color>
         <color name="text_secondary">#B0BEC5</color>
 
+        <color name="weather_background">#2196F3</color>
+        <color name="weather_card_background">#3F51B5</color>
+        <color name="white_alpha_80">#CCFFFFFF</color>
+          <color name="divider_color">#26FFFFFF</color>
+
 
 </resources>

@@ -16,9 +16,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"${properties["OPEN_WEATHER_API_KEY"]}\"")
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
 
     }
 
@@ -47,6 +49,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
     implementation ("androidx.room:room-ktx:2.6.1")
