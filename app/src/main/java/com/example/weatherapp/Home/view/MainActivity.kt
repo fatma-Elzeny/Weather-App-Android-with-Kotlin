@@ -88,8 +88,8 @@ class MainActivity : AppCompatActivity() {
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()
             LocationMode.MAP -> {
-                val lat = settingsRepo.prefs.getFloat("map_lat", 30.0f).toDouble()
-                val lon = settingsRepo.prefs.getFloat("map_lon", 31.0f).toDouble()
+                val lat = settingsRepo.getMapLat()
+                val lon = settingsRepo.getMapLon()
                 viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit))
             }
         }
@@ -168,7 +168,11 @@ class MainActivity : AppCompatActivity() {
         binding.tvCity.text = response.city.name
         binding.tvDateTime.text = formatDateTime(current.timestamp, "EEEE, MMM d • HH:mm")
 
-        binding.tvTemp.text = getString(R.string.temperature_format, current.main.temp.toInt())
+        val tempUnitSymbol = when (settings.temperatureUnit) {
+            TemperatureUnit.CELSIUS -> "°C"
+            TemperatureUnit.FAHRENHEIT -> "°F"
+        }
+        binding.tvTemp.text = "${current.main.temp.toInt()}$tempUnitSymbol"
         binding.tvWeatherDesc.text = current.weather.firstOrNull()?.description?.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
         }
@@ -231,5 +235,19 @@ class MainActivity : AppCompatActivity() {
         val config = resources.configuration
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
+    }
+    override fun onResume() {
+        super.onResume()
+        val currentSettings = settingsRepo.loadSettings()
+        applyLanguage(currentSettings.language)
+        // Re-fetch data if needed based on updated settings
+        when (currentSettings.locationMode) {
+            LocationMode.GPS -> checkLocationPermission()
+            LocationMode.MAP -> {
+                val lat = settingsRepo.getMapLat()
+                val lon = settingsRepo.getMapLon()
+                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit))
+            }
+        }
     }
 }

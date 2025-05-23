@@ -25,8 +25,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     val pickedLocation: LiveData<Pair<Double, Double>?> = _pickedLocation
 
     fun updatePickedLocation(lat: Double, lon: Double) {
+        repository.saveMapLocation(lat, lon)
         _pickedLocation.value = Pair(lat, lon)
-
+        // Ensure location mode is set to MAP
+        val current = _settingsLiveData.value ?: return
+        saveAndPost(current.copy(locationMode = LocationMode.MAP))
     }
 
     override fun updateLocationMode(mode: LocationMode) {

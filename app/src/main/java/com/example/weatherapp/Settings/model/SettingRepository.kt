@@ -14,7 +14,16 @@ class SettingsRepository(private val context: Context) {
             putBoolean("notifications_enabled", settings.notificationsEnabled)
         }.apply()
     }
+    fun saveMapLocation(lat: Double, lon: Double) {
+        prefs.edit().apply {
+            putLong("map_lat", lat.toBits())
+            putLong("map_lon", lon.toBits())
+            apply()
+        }
+    }
 
+    fun getMapLat(): Double = Double.fromBits(prefs.getLong("map_lat", 30.0.toBits()))
+    fun getMapLon(): Double = Double.fromBits(prefs.getLong("map_lon", 31.0.toBits()))
     fun loadSettings(): SettingsData {
         val locationMode = prefs.getString("location_mode", LocationMode.GPS.name)?.let { LocationMode.valueOf(it) } ?: LocationMode.GPS
         val tempUnit = prefs.getString("temp_unit", TemperatureUnit.CELSIUS.name)?.let { TemperatureUnit.valueOf(it) } ?: TemperatureUnit.CELSIUS
