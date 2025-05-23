@@ -1,40 +1,27 @@
 package com.example.weatherapp.Home.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.util.Log
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.weatherapp.AlertsActivity
 import com.example.weatherapp.FavoritesActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
 import com.example.weatherapp.Home.viewmodel.MainViewModelFactory
-import com.example.weatherapp.Home.viewmodel.MainViewModelInterface
 import com.example.weatherapp.R
-import com.example.weatherapp.SettingsActivity
+import com.example.weatherapp.Settings.view.SettingsActivity
 import com.example.weatherapp.WeatherIconMapper
 import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.db.WeatherLocalDataSourceImpl
@@ -50,7 +37,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.math.roundToInt
+
 // MainActivity.kt
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
