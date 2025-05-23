@@ -73,6 +73,7 @@ dependencies {
     implementation("com.github.MKergall:osmbonuspack:6.9.0") // Includes Nominatim client
     // --- Material Design & AppCompat ---
     implementation ("com.google.android.material:material:1.11.0")
+    implementation ("com.google.android.material:material:1.3.0-alpha03")
     implementation ("androidx.appcompat:appcompat:1.6.1")
 
 // --- Optional: WorkManager for alerts ---

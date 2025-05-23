@@ -11,11 +11,12 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toolbar
+import androidx.appcompat.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,10 +29,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weatherapp.AlertsActivity
+import com.example.weatherapp.FavoritesActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
 import com.example.weatherapp.Home.viewmodel.MainViewModelFactory
 import com.example.weatherapp.Home.viewmodel.MainViewModelInterface
 import com.example.weatherapp.R
+import com.example.weatherapp.SettingsActivity
 import com.example.weatherapp.WeatherIconMapper
 import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.db.WeatherLocalDataSourceImpl
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.navigationView)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-
+        toolbar.title = "Weather"
         val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()

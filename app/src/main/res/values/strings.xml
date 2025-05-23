@@ -5,6 +5,9 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <string name="open">Open drawer</string>
+    <string name="close">Close drawer</string>
+
 
     <string name="humidity">Humidity</string>
     <string name="wind">Wind</string>
