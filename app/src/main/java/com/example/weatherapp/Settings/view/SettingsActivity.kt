@@ -2,6 +2,8 @@ package com.example.weatherapp.Settings.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
@@ -91,7 +93,13 @@ class SettingsActivity : AppCompatActivity() {
         val config = resources.configuration
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
-        recreate() // recreate activity to apply language changes
+
+        // Delay recreate slightly to allow any UI events to settle
+        Handler(Looper.getMainLooper()).post {
+            if (!isFinishing && !isDestroyed) {
+                recreate()
+            }
+        }
     }
 
     private fun handleNotifications(enabled: Boolean) {

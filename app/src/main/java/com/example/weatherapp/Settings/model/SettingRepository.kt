@@ -3,7 +3,7 @@ package com.example.weatherapp.Settings.model
 import android.content.Context
 
 class SettingsRepository(private val context: Context) {
-    private val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
+    val prefs = context.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
 
     fun saveSettings(settings: SettingsData) {
         prefs.edit().apply {

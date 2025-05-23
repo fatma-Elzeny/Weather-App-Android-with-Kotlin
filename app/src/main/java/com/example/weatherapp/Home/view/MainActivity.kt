@@ -21,6 +21,12 @@ import com.example.weatherapp.FavoritesActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
 import com.example.weatherapp.Home.viewmodel.MainViewModelFactory
 import com.example.weatherapp.R
+import com.example.weatherapp.Settings.model.Language
+import com.example.weatherapp.Settings.model.LocationMode
+import com.example.weatherapp.Settings.model.SettingsData
+import com.example.weatherapp.Settings.model.SettingsRepository
+import com.example.weatherapp.Settings.model.TemperatureUnit
+import com.example.weatherapp.Settings.model.WindSpeedUnit
 import com.example.weatherapp.Settings.view.SettingsActivity
 import com.example.weatherapp.WeatherIconMapper
 import com.example.weatherapp.data.db.WeatherDatabase
@@ -40,12 +46,13 @@ import java.util.TimeZone
 
 // MainActivity.kt
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var hourlyAdapter: HourlyForecastAdapter
     private lateinit var dailyAdapter: DailyForecastAdapter
+    private lateinit var settingsRepo: SettingsRepository
 
-    // Location permission launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -61,17 +68,34 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        settingsRepo = SettingsRepository(applicationContext)
+        val currentSettings = settingsRepo.loadSettings()
+        applyLanguage(currentSettings.language)
+
         setupAdapters()
+        setupToolbarDrawer()
+
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
             local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao())
         )
-
         val factory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         setupObservers()
-        checkLocationPermission()
+
+        // Use saved location mode
+        when (currentSettings.locationMode) {
+            LocationMode.GPS -> checkLocationPermission()
+            LocationMode.MAP -> {
+                val lat = settingsRepo.prefs.getFloat("map_lat", 30.0f).toDouble()
+                val lon = settingsRepo.prefs.getFloat("map_lon", 31.0f).toDouble()
+                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit))
+            }
+        }
+    }
+
+    private fun setupToolbarDrawer() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
         val navView = findViewById<NavigationView>(R.id.navigationView)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -83,43 +107,27 @@ class MainActivity : AppCompatActivity() {
 
         navView.setNavigationItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_home -> {
-                    drawerLayout.closeDrawers()
-                }
-                R.id.nav_favorites -> {
-                    startActivity(Intent(this, FavoritesActivity::class.java))
-                }
-                R.id.nav_alerts -> {
-                    startActivity(Intent(this, AlertsActivity::class.java))
-                }
-                R.id.nav_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                }
+                R.id.nav_home -> drawerLayout.closeDrawers()
+                R.id.nav_favorites -> startActivity(Intent(this, FavoritesActivity::class.java))
+                R.id.nav_alerts -> startActivity(Intent(this, AlertsActivity::class.java))
+                R.id.nav_settings -> startActivity(Intent(this, SettingsActivity::class.java))
             }
             true
         }
-
     }
 
     private fun setupAdapters() {
         hourlyAdapter = HourlyForecastAdapter(0)
         dailyAdapter = DailyForecastAdapter()
-
-        binding.rvHourly.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
-            adapter = hourlyAdapter
-        }
-
-        binding.rvDaily.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = dailyAdapter
-        }
+        binding.rvHourly.adapter = hourlyAdapter
+        binding.rvDaily.adapter = dailyAdapter
     }
 
     private fun setupObservers() {
         viewModel.forecast.observe(this) { response ->
+            val settings = settingsRepo.loadSettings()
             response?.let {
-                updateCurrentWeather(it)
+                updateCurrentWeather(it, settings)
                 updateForecastLists(it.list, it.city.timezone)
             }
         }
@@ -132,65 +140,58 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLocationPermission() {
-        when {
-            ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                getCurrentLocation()
-            }
-
-            else -> {
-                requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-            }
+        if (ContextCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            getCurrentLocation()
+        } else {
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
     private fun getCurrentLocation() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED
+        ) return
 
         val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val settings = settingsRepo.loadSettings()
         location?.let {
-            viewModel.fetchForecast(it.latitude, it.longitude, "metric")
-        } ?: run {
-            Toast.makeText(this, "Enable location services", Toast.LENGTH_SHORT).show()
-        }
+            viewModel.fetchForecast(it.latitude, it.longitude, getUnit(settings.temperatureUnit))
+        } ?: Toast.makeText(this, "Enable location services", Toast.LENGTH_SHORT).show()
     }
 
-    private fun updateCurrentWeather(response: WeatherResponse) {
+    private fun updateCurrentWeather(response: WeatherResponse, settings: SettingsData) {
         val current = response.list.firstOrNull() ?: return
-
-        // Location and time
         binding.tvCity.text = response.city.name
         binding.tvDateTime.text = formatDateTime(current.timestamp, "EEEE, MMM d • HH:mm")
 
-        // Temperature and description
         binding.tvTemp.text = getString(R.string.temperature_format, current.main.temp.toInt())
-        binding.tvWeatherDesc.text = current.weather.firstOrNull()?.description?.capitalize()
+        binding.tvWeatherDesc.text = current.weather.firstOrNull()?.description?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+        }
 
-        // Weather stats
-        binding.tvHumidityValue.text = getString(R.string.percentage_format, current.main.humidity)
-        binding.tvPressureValue.text = getString(R.string.pressure_format, current.main.pressure)
-        binding.tvWindValue.text = getString(R.string.speed_format, current.wind.speed.toInt())
+        binding.tvHumidityValue.text = "${current.main.humidity}%"
+        binding.tvPressureValue.text = "${current.main.pressure} hPa"
 
-        // Weather icon
+        val windSpeed = when (settings.windSpeedUnit) {
+            WindSpeedUnit.M_S -> "${current.wind.speed} m/s"
+            WindSpeedUnit.KM_H -> "${current.wind.speed * 3.6} km/h"
+            WindSpeedUnit.MPH -> "${current.wind.speed * 2.23694} mph"
+        }
+        binding.tvWindValue.text = windSpeed
+
         val iconCode = current.weather.firstOrNull()?.icon ?: "01d"
         val iconRes = WeatherIconMapper.getIconResource(iconCode)
         binding.imgWeatherIcon.setImageResource(iconRes)
     }
 
-    private fun updateForecastLists(items: List<ForecastItem>,timezoneOffsetSeconds: Int) {
+    private fun updateForecastLists(items: List<ForecastItem>, timezoneOffsetSeconds: Int) {
         hourlyAdapter = HourlyForecastAdapter(timezoneOffsetSeconds)
         binding.rvHourly.adapter = hourlyAdapter
-        val hourlyItems = items.filter { isToday(it.timestamp) }.take(8)
-        hourlyAdapter.submitList(hourlyItems)
+        hourlyAdapter.submitList(items.take(8))
         dailyAdapter.submitList(processDailyForecast(items))
     }
 
@@ -211,20 +212,24 @@ class MainActivity : AppCompatActivity() {
             .sortedBy { it.timestamp }
     }
 
-    private fun isToday(timestamp: Long): Boolean {
-        val todayCalendar = Calendar.getInstance(TimeZone.getDefault()) // Local time
-        val itemCalendar = Calendar.getInstance(TimeZone.getDefault()).apply {
-            timeInMillis = timestamp * 1000 // Convert API timestamp to milliseconds
+    private fun getUnit(unit: TemperatureUnit): String {
+        return when (unit) {
+            TemperatureUnit.CELSIUS -> "metric"
+            TemperatureUnit.FAHRENHEIT -> "imperial"
         }
-
-        return todayCalendar.get(Calendar.DAY_OF_YEAR) == itemCalendar.get(Calendar.DAY_OF_YEAR) &&
-                todayCalendar.get(Calendar.YEAR) == itemCalendar.get(Calendar.YEAR)
-
     }
 
     private fun formatDateTime(timestamp: Long, pattern: String): String {
         return SimpleDateFormat(pattern, Locale.getDefault()).apply {
             timeZone = TimeZone.getDefault()
         }.format(Date(timestamp * 1000))
+    }
+
+    private fun applyLanguage(lang: Language) {
+        val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }
