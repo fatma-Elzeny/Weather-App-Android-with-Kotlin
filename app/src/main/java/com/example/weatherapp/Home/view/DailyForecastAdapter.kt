@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weatherapp.R
+import com.example.weatherapp.WeatherIconMapper
 import com.example.weatherapp.data.model.ForecastItem
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -32,8 +33,9 @@ class DailyForecastAdapter : ListAdapter<ForecastItem, DailyForecastAdapter.Dail
             view.findViewById<TextView>(R.id.tvDailyTemp).text =
                 "${item.main.tempMin.toInt()}° / ${item.main.tempMax.toInt()}°"
 
-            val iconUrl = "https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png"
-            Glide.with(view).load(iconUrl).into(view.findViewById(R.id.imgDailyIcon))
+            val iconCode = item.weather.firstOrNull()?.icon ?: "01d"
+            val iconRes = WeatherIconMapper.getIconResource(iconCode)
+            view.findViewById<ImageView>(R.id.imgDailyIcon).setImageResource(iconRes)
         }
     }
 

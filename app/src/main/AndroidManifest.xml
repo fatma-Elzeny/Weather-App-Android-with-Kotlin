@@ -18,6 +18,9 @@
         android:theme="@style/Theme.WeatherApp"
         tools:targetApi="31">
         <activity
+            android:name=".AlertsActivity"
+            android:exported="false" />
+        <activity
             android:name=".LocationPermission.view.LocationPermissionActivity"
             android:exported="false" />
         <activity
@@ -31,7 +34,7 @@
         </activity>
         <activity
             android:name=".Home.view.MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

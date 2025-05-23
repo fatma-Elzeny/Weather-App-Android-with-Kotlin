@@ -2,6 +2,7 @@ package com.example.weatherapp.Home.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
@@ -10,23 +11,28 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.weatherapp.AlertsActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
 import com.example.weatherapp.Home.viewmodel.MainViewModelFactory
 import com.example.weatherapp.Home.viewmodel.MainViewModelInterface
 import com.example.weatherapp.R
+import com.example.weatherapp.WeatherIconMapper
 import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.db.WeatherLocalDataSourceImpl
 import com.example.weatherapp.data.model.ForecastItem
@@ -35,6 +41,7 @@ import com.example.weatherapp.data.network.RetrofitClient
 import com.example.weatherapp.data.network.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repo.WeatherRepositoryImpl
 import com.example.weatherapp.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -75,15 +82,41 @@ class MainActivity : AppCompatActivity() {
 
         setupObservers()
         checkLocationPermission()
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> {
+                    drawerLayout.closeDrawers()
+                }
+                R.id.nav_favorites -> {
+                    startActivity(Intent(this, FavoritesActivity::class.java))
+                }
+                R.id.nav_alerts -> {
+                    startActivity(Intent(this, AlertsActivity::class.java))
+                }
+                R.id.nav_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                }
+            }
+            true
+        }
+
     }
 
     private fun setupAdapters() {
-        hourlyAdapter = HourlyForecastAdapter()
+        hourlyAdapter = HourlyForecastAdapter(0)
         dailyAdapter = DailyForecastAdapter()
 
         binding.rvHourly.apply {
-            layoutManager =
-                LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(this@MainActivity, LinearLayoutManager.HORIZONTAL, false)
             adapter = hourlyAdapter
         }
 
@@ -97,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.forecast.observe(this) { response ->
             response?.let {
                 updateCurrentWeather(it)
-                updateForecastLists(it.list)
+                updateForecastLists(it.list, it.city.timezone)
             }
         }
 
@@ -158,22 +191,16 @@ class MainActivity : AppCompatActivity() {
         binding.tvWindValue.text = getString(R.string.speed_format, current.wind.speed.toInt())
 
         // Weather icon
-        current.weather.firstOrNull()?.icon?.let { icon ->
-            Glide.with(this)
-                .load("https://openweathermap.org/img/wn/${icon}@4x.png")
-                .placeholder(R.drawable.ic_placeholder)
-                .into(binding.imgWeatherIcon)
-        }
+        val iconCode = current.weather.firstOrNull()?.icon ?: "01d"
+        val iconRes = WeatherIconMapper.getIconResource(iconCode)
+        binding.imgWeatherIcon.setImageResource(iconRes)
     }
 
-    private fun updateForecastLists(items: List<ForecastItem>) {
-        val currentTime = System.currentTimeMillis() / 1000
-
-        // Filter all items for today (local time)
-        val hourlyItems = items.filter { isToday(it.timestamp) }
+    private fun updateForecastLists(items: List<ForecastItem>,timezoneOffsetSeconds: Int) {
+        hourlyAdapter = HourlyForecastAdapter(timezoneOffsetSeconds)
+        binding.rvHourly.adapter = hourlyAdapter
+        val hourlyItems = items.filter { isToday(it.timestamp) }.take(8)
         hourlyAdapter.submitList(hourlyItems)
-
-        // Daily forecast logic remains the same
         dailyAdapter.submitList(processDailyForecast(items))
     }
 
@@ -195,13 +222,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isToday(timestamp: Long): Boolean {
-        val calendar = Calendar.getInstance(TimeZone.getDefault()) // Use device's time zone
-        val today = calendar.apply { time = Date() }.get(Calendar.DAY_OF_YEAR)
+        val todayCalendar = Calendar.getInstance(TimeZone.getDefault()) // Local time
+        val itemCalendar = Calendar.getInstance(TimeZone.getDefault()).apply {
+            timeInMillis = timestamp * 1000 // Convert API timestamp to milliseconds
+        }
 
-        calendar.time = Date(timestamp * 1000)
-        val itemDay = calendar.get(Calendar.DAY_OF_YEAR)
+        return todayCalendar.get(Calendar.DAY_OF_YEAR) == itemCalendar.get(Calendar.DAY_OF_YEAR) &&
+                todayCalendar.get(Calendar.YEAR) == itemCalendar.get(Calendar.YEAR)
 
-        return today == itemDay
     }
 
     private fun formatDateTime(timestamp: Long, pattern: String): String {
