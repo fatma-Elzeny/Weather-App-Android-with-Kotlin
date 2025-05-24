@@ -23,6 +23,7 @@ class MapPickerActivity : AppCompatActivity() {
     private var selectedGeoPoint: GeoPoint? = null
     private lateinit var marker: Marker
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map_picker)

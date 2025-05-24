@@ -1,106 +1,179 @@
 <!-- res/layout/activity_settings.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="500dp"
+        app:layout_constraintEnd_toEndOf="@+id/notificationsSwitch"
+        app:layout_constraintStart_toEndOf="@+id/notificationsSwitch">
 
         <!-- Location Setting -->
+
+
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/gradient_oval_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:text="Location Setting"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioGroup
             android:id="@+id/radioGroupLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView">
 
             <RadioButton
                 android:id="@+id/radioGps"
-                android:text="GPS"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="GPS" />
 
             <RadioButton
                 android:id="@+id/radioMap"
-                android:text="Map"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp" />
+                android:layout_marginStart="20dp"
+                android:text="Map" />
         </RadioGroup>
 
-        <!-- Temperature Unit -->
+        <!-- Language -->
+
+        <!-- Notifications -->
+
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/gradient_oval_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:text="Temperature Unit"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/windUnitSpinner" />
 
         <Spinner
             android:id="@+id/tempUnitSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/temperature_units" />
+            android:layout_width="120dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="32dp"
+            android:entries="@array/temperature_units"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-        <!-- Wind Speed Unit -->
         <TextView
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/gradient_oval_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:text="Wind Speed Unit"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radioGroupLocation" />
 
         <Spinner
             android:id="@+id/windUnitSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/wind_speed_units" />
+            android:layout_width="120dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:entries="@array/wind_speed_units"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-        <!-- Language -->
         <TextView
+            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="88dp"
+            android:background="@drawable/gradient_oval_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:text="Language"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/windUnitSpinner" />
 
         <Switch
             android:id="@+id/languageSwitch"
-            android:text="Arabic / English"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="192dp"
+            android:layout_height="41dp"
+            android:layout_marginStart="44dp"
+            android:text="@string/arabic_english"
+            app:layout_constraintStart_toEndOf="@+id/textView4"
+            app:layout_constraintTop_toTopOf="@+id/textView4"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-        <!-- Notifications -->
         <TextView
+            android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/gradient_oval_bg"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
             android:text="Notifications"
+            android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/languageSwitch" />
 
         <Switch
             android:id="@+id/notificationsSwitch"
-            android:text="Enable Notifications"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="192dp"
+            android:layout_height="41dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/enable_notifications"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/languageSwitch"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-    </LinearLayout>
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieView"
+            android:layout_width="296dp"
+            android:layout_height="292dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="412dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/setting_animation" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
