@@ -32,7 +32,7 @@ class FavoritesActivity : AppCompatActivity() {
             if (data != null) {
                 val lat = data.getDoubleExtra("lat", 0.0)
                 val lon = data.getDoubleExtra("lon", 0.0)
-                val name = "Location ${lat.format(2)}, ${lon.format(2)}"
+                val name = data?.getStringExtra("name") ?: "Location ${lat.format(2)}, ${lon.format(2)}"
                 viewModel.addFavorite(FavoriteLocation(name = name, lat = lat, lon = lon))
             }
         }
@@ -50,6 +50,7 @@ class FavoritesActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("lat", location.lat)
                 intent.putExtra("lon", location.lon)
+                intent.putExtra("name", location.name)
                 startActivity(intent)
             },
             onDeleteClick = { location ->

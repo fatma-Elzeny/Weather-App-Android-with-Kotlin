@@ -38,19 +38,9 @@ class FavoritesAdapter(
                 onItemClick(place)
             }
 
-            btnOptions.setOnClickListener {
-                showDeleteDialog(place)
-            }
+            btnOptions.setOnClickListener { onDeleteClick(place) }
         }
 
-        private fun showDeleteDialog(place: FavoriteLocation) {
-            AlertDialog.Builder(itemView.context)
-                .setTitle("Delete")
-                .setMessage("Are you sure you want to delete this place?")
-                .setPositiveButton("Yes") { _, _ -> onDeleteClick(place) }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {

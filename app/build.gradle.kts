@@ -75,6 +75,9 @@ dependencies {
     implementation ("com.google.android.material:material:1.11.0")
     implementation ("com.google.android.material:material:1.3.0-alpha03")
     implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.cardview:cardview:1.0.0")
+
+
 
 // --- Optional: WorkManager for alerts ---
     implementation ("androidx.work:work-runtime-ktx:2.9.0")

@@ -9,9 +9,13 @@ import android.widget.AdapterView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.weatherapp.AlertsActivity
+import com.example.weatherapp.Favourites.view.FavoritesActivity
+import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.MapPickerActivity
 import com.example.weatherapp.R
 import com.example.weatherapp.Settings.model.Language
@@ -30,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        setupNavigationDrawer()
         // Observe current settings and update UI
         viewModel.settingsLiveData.observe(this) { settings ->
             // Update UI selections based on settings
@@ -79,6 +83,21 @@ class SettingsActivity : AppCompatActivity() {
         binding.notificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.updateNotifications(isChecked)
             handleNotifications(isChecked)
+        }
+    }
+
+    private fun setupNavigationDrawer() {
+        setSupportActionBar(binding.toolbar)
+        val toggle = ActionBarDrawerToggle(this, binding.drawerLayout, binding.toolbar, R.string.open, R.string.close)
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        binding.navigationView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> startActivity(Intent(this, MainActivity::class.java))
+                R.id.nav_alerts -> startActivity(Intent(this, AlertsActivity::class.java))
+                R.id.nav_favorites -> startActivity(Intent(this, FavoritesActivity::class.java))
+            }
+            true
         }
     }
 
