@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hourlyAdapter: HourlyForecastAdapter
     private lateinit var dailyAdapter: DailyForecastAdapter
     private lateinit var settingsRepo: SettingsRepository
+
+    // ✅ NEW: Variables to check if user opened via Favorite
     private var overrideLat: Double? = null
     private var overrideLon: Double? = null
 
@@ -85,8 +87,22 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         setupObservers()
-        
-        // Use saved location mode
+
+        // ✅ NEW: Read lat/lon if started from Favorite
+        overrideLat = intent.getDoubleExtra("lat", Double.NaN)
+        overrideLon = intent.getDoubleExtra("lon", Double.NaN)
+
+        // ✅ NEW: If coming from FavoritesActivity, use lat/lon directly and skip location mode
+        if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) {
+            viewModel.fetchForecast(
+                overrideLat!!,
+                overrideLon!!,
+                getUnit(currentSettings.temperatureUnit)
+            )
+            return
+        }
+
+        // Default behavior based on location mode
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()
             LocationMode.MAP -> {
@@ -238,18 +254,22 @@ class MainActivity : AppCompatActivity() {
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
 
-        // Delay recreate slightly to allow any UI events to settle
         Handler(Looper.getMainLooper()).post {
             if (!isFinishing && !isDestroyed) {
                 recreate()
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
+
+        // ✅ NEW: Skip reload if user came from Favorite place
+        if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) return
+
         val currentSettings = settingsRepo.loadSettings()
         applyLanguage(currentSettings.language)
-        // Re-fetch data if needed based on updated settings
+
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()
             LocationMode.MAP -> {
