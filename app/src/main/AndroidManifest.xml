@@ -24,7 +24,7 @@
             android:name=".Settings.view.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".FavoritesActivity"
+            android:name=".Favourites.view.FavoritesActivity"
             android:exported="false" />
         <activity
             android:name=".AlertsActivity"
