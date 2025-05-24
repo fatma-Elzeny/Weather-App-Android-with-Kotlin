@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var hourlyAdapter: HourlyForecastAdapter
     private lateinit var dailyAdapter: DailyForecastAdapter
     private lateinit var settingsRepo: SettingsRepository
+    private var overrideLat: Double? = null
+    private var overrideLon: Double? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -83,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         setupObservers()
-
+        
         // Use saved location mode
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()

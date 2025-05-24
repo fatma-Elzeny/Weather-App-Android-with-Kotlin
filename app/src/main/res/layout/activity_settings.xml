@@ -142,10 +142,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView2" />
 
+        <!-- Lottie Animation -->
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/gradient_oval_bg"
             android:paddingHorizontal="16dp"
@@ -159,17 +162,15 @@
 
         <Switch
             android:id="@+id/languageSwitch"
-            android:layout_width="167dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="68dp"
+            android:layout_width="170dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="44dp"
             android:layout_marginTop="4dp"
             android:text="@string/arabic_english"
             android:textColor="#FFFFFF"
             app:layout_constraintStart_toEndOf="@id/textView4"
             app:layout_constraintTop_toTopOf="@id/textView4"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-        <!-- Lottie Animation -->
 
         <TextView
             android:id="@+id/textView5"
@@ -190,7 +191,7 @@
             android:id="@+id/notificationsSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="4dp"
             android:text="@string/enable_notifications"
             android:textColor="#FFFFFF"
