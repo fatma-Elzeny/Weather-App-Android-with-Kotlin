@@ -17,7 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.example.weatherapp.AlertsActivity
+import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
 import com.example.weatherapp.Home.viewmodel.MainViewModelFactory

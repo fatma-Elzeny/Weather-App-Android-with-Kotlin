@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/btnFrom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="From"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/btnTo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="To"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/radioNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification"
+            android:checked="true"
+            android:textColor="@android:color/white" />
+
+        <RadioButton
+            android:id="@+id/radioAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Alarm"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="16dp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/white" />
+</LinearLayout>

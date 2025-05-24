@@ -3,16 +3,13 @@ package com.example.weatherapp.Favourites.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherapp.AlertsActivity
+import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.viewmodel.FavoritesViewModel
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.MapPickerActivity

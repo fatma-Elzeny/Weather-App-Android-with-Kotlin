@@ -7,13 +7,10 @@ import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.weatherapp.AlertsActivity
+import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.MapPickerActivity
