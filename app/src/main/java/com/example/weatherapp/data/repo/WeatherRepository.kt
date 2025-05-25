@@ -12,6 +12,8 @@ interface WeatherRepository {
         units: String
     ): WeatherResponse
 
+
+
     // Favorites
     suspend fun insertFavorite(location: FavoriteLocation)
     suspend fun deleteFavorite(location: FavoriteLocation)

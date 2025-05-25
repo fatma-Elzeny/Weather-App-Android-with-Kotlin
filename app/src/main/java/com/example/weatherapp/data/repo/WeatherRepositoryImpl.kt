@@ -69,4 +69,7 @@ class WeatherRepositoryImpl(
             gson.fromJson(it.data, WeatherResponse::class.java)
         }
     }
+    suspend fun getCachedUpdateTime(city: String): Long? {
+        return local.getCachedWeather(city)?.lastUpdated
+    }
 }

@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.viewmodel.MainViewModel
@@ -39,6 +40,8 @@ import com.example.weatherapp.data.network.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repo.WeatherRepositoryImpl
 import com.example.weatherapp.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -147,6 +150,8 @@ class MainActivity : AppCompatActivity() {
             response?.let {
                 updateCurrentWeather(it, settings)
                 updateForecastLists(it.list, it.city.timezone)
+                val lastUpdate = System.currentTimeMillis()
+                showLastUpdated(lastUpdate)
             }
         }
 
@@ -171,20 +176,43 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) return
+            != PackageManager.PERMISSION_GRANTED) return
 
         val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         val settings = settingsRepo.loadSettings()
-        location?.let {
-            viewModel.fetchForecast(it.latitude, it.longitude, getUnit(settings.temperatureUnit))
-        } ?: Toast.makeText(this, "Enable location services", Toast.LENGTH_SHORT).show()
+
+        if (location != null) {
+            viewModel.fetchForecast(location.latitude, location.longitude, getUnit(settings.temperatureUnit))
+        } else {
+            // ⛔ Offline fallback
+            lifecycleScope.launch {
+                val cached = WeatherDatabase.getInstance(this@MainActivity)
+                    .weatherDao()
+                    .getCachedWeather("Cairo") // or whatever default city
+                cached?.let {
+                    val response = Gson().fromJson(it.data, WeatherResponse::class.java)
+                    updateCurrentWeather(response, settings)
+                    updateForecastLists(response.list, response.city.timezone)
+                    showLastUpdated(it.lastUpdated)
+                } ?: Toast.makeText(this@MainActivity, "No cached data", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun showLastUpdated(timestampMillis: Long) {
+        val sdf = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
+        val formatted = sdf.format(Date(timestampMillis))
+        binding.tvLastUpdated.text = "Last updated: $formatted"
     }
 
     private fun updateCurrentWeather(response: WeatherResponse, settings: SettingsData) {
         val current = response.list.firstOrNull() ?: return
         binding.tvCity.text = response.city.name
-        binding.tvDateTime.text = formatDateTime(current.timestamp, "EEEE, MMM d • HH:mm", response.city.timezone)
+        val currentLocalTime = System.currentTimeMillis()
+        binding.tvDateTime.text = SimpleDateFormat("EEEE, MMM d • HH:mm", Locale.getDefault())
+            .apply { timeZone = TimeZone.getDefault() }
+            .format(Date(currentLocalTime))
+
 
 
         val tempUnitSymbol = when (settings.temperatureUnit) {

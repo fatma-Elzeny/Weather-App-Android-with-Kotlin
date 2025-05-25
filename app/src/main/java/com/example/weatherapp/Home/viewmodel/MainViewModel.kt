@@ -13,6 +13,9 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel(), Ma
     private val _forecast = MutableLiveData<WeatherResponse>()
     override val forecast: LiveData<WeatherResponse> = _forecast
 
+    private val _currentWeather = MutableLiveData<WeatherResponse>()
+    val currentWeather: LiveData<WeatherResponse> = _currentWeather
+
     private val _loading = MutableLiveData<Boolean>()
     override val loading: LiveData<Boolean> = _loading
 
@@ -33,4 +36,5 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel(), Ma
             }
         }
     }
+
     }
