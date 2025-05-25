@@ -184,7 +184,8 @@ class MainActivity : AppCompatActivity() {
     private fun updateCurrentWeather(response: WeatherResponse, settings: SettingsData) {
         val current = response.list.firstOrNull() ?: return
         binding.tvCity.text = response.city.name
-        binding.tvDateTime.text = formatDateTime(current.timestamp, "EEEE, MMM d • HH:mm")
+        binding.tvDateTime.text = formatDateTime(current.timestamp, "EEEE, MMM d • HH:mm", response.city.timezone)
+
 
         val tempUnitSymbol = when (settings.temperatureUnit) {
             TemperatureUnit.CELSIUS -> "°C"
@@ -241,11 +242,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun formatDateTime(timestamp: Long, pattern: String): String {
-        return SimpleDateFormat(pattern, Locale.getDefault()).apply {
-            timeZone = TimeZone.getDefault()
-        }.format(Date(timestamp * 1000))
+    private fun formatDateTime(timestamp: Long, pattern: String, offsetSeconds: Int): String {
+        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val correctedTimestamp = (timestamp + offsetSeconds) * 1000
+        return sdf.format(Date(correctedTimestamp))
     }
+
+
 
     private fun applyLanguage(lang: Language) {
         val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")

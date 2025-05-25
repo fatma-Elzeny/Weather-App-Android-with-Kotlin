@@ -7,13 +7,15 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <!-- Main content -->
-    <LinearLayout
+    <!-- Main Content -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@android:color/black">
+        android:padding="16dp">
 
+        <!-- Toolbar -->
+
+        <!-- Empty View -->
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -23,36 +25,55 @@
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:title="Alerts"
-            app:titleTextColor="@android:color/white"/>
+            app:titleTextColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/tvNoAlerts"
-            android:layout_width="wrap_content"
+        <!-- Favorite List -->
+        <LinearLayout
+            android:id="@+id/emptyLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="32dp"
-            android:text="No Alerts"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:visibility="gone" />
+            android:layout_below="@id/toolbar"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="411dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_alerts"
+                app:tint="@color/sky_blue_500" />
+
+            <TextView
+                android:id="@+id/tvNoAlerts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="No Alerts"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerAlerts"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="8dp" />
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"
+            android:visibility="visible"
+            android:layout_marginTop="16dp"
+            tools:listitem="@layout/item_alert" />
 
+        <!-- FAB Button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddAlert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add"
-            android:contentDescription="Add Alert"
-            app:backgroundTint="@color/sky_blue_700" />
-    </LinearLayout>
+            android:backgroundTint="@color/sky_blue_500"
+            app:srcCompat="@drawable/ic_add" />
+    </RelativeLayout>
 
     <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
@@ -65,10 +86,3 @@
         app:itemTextColor="@android:color/white"
         app:itemIconTint="@android:color/white"/>
 </androidx.drawerlayout.widget.DrawerLayout>
-
-
-
-
-
-
-

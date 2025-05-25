@@ -1,15 +1,22 @@
 package com.example.weatherapp.Settings.view
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.view.MainActivity
@@ -20,13 +27,26 @@ import com.example.weatherapp.Settings.model.LocationMode
 import com.example.weatherapp.Settings.model.TemperatureUnit
 import com.example.weatherapp.Settings.model.WindSpeedUnit
 import com.example.weatherapp.Settings.viewmodel.SettingsViewModel
+import com.example.weatherapp.WeatherNotificationWorker
 import com.example.weatherapp.databinding.ActivitySettingsBinding
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
     private val MAP_PICKER_REQUEST_CODE = 123
+
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show()
+            scheduleWeatherNotifications()
+        } else {
+            Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -120,11 +140,34 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun handleNotifications(enabled: Boolean) {
         if (enabled) {
-            // Register notifications or schedule
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestNotificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    return
+                }
+            }
+            scheduleWeatherNotifications()
         } else {
-            // Cancel notifications
+            cancelWeatherNotifications()
         }
     }
+
+    private fun scheduleWeatherNotifications() {
+        val request = PeriodicWorkRequestBuilder<WeatherNotificationWorker>(1, TimeUnit.HOURS).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "weather_alerts",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            request
+        )
+    }
+    private fun cancelWeatherNotifications() {
+        WorkManager.getInstance(this).cancelUniqueWork("weather_alerts")
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == MAP_PICKER_REQUEST_CODE && resultCode == RESULT_OK) {
