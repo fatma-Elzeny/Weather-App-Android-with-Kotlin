@@ -39,6 +39,10 @@ interface WeatherDAO {
     @Query("DELETE FROM alerts WHERE toTime < :currentTime")
     suspend fun deleteExpiredAlerts(currentTime: Long)
 
+    @Query("SELECT * FROM alerts")
+    suspend fun getAllAlertsOnce(): List<WeatherAlert>
+
+
     // ----- Cached Weather -----
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCachedWeather(weather: CachedWeather)

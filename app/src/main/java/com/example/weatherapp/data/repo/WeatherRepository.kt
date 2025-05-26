@@ -23,6 +23,8 @@ interface WeatherRepository {
     suspend fun insertAlert(alert: WeatherAlert)
     suspend fun deleteAlert(alert: WeatherAlert)
     fun getAllAlerts(): LiveData<List<WeatherAlert>>
+    suspend fun getAllAlertsOnce(): List<WeatherAlert>
+
 
     // Cached Weather
     suspend fun saveCachedWeather(response: WeatherResponse)

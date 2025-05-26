@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.Alerts.viewmodel.AlertsViewModel
 import com.example.weatherapp.Alerts.viewmodel.AlertsViewModelFactory
@@ -23,6 +24,7 @@ import com.example.weatherapp.data.network.WeatherRemoteDataSourceImpl
 import com.example.weatherapp.data.repo.WeatherRepository
 import com.example.weatherapp.data.repo.WeatherRepositoryImpl
 import com.example.weatherapp.databinding.ActivityAlertsBinding
+import kotlinx.coroutines.launch
 
 class AlertsActivity : AppCompatActivity() {
 
@@ -53,7 +55,10 @@ class AlertsActivity : AppCompatActivity() {
             }
             true
         }
-        viewModel.cleanUpExpiredAlerts()
+        lifecycleScope.launch {
+            viewModel.cleanUpExpiredAlertsOnce()
+        }
+
 
         // Setup RecyclerView
         adapter = AlertListAdapter { alert ->

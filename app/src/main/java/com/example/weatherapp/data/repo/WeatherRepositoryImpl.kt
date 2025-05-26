@@ -49,6 +49,10 @@ class WeatherRepositoryImpl(
     override fun getAllAlerts(): LiveData<List<WeatherAlert>> =
         local.getAllAlerts()
 
+    override suspend fun getAllAlertsOnce(): List<WeatherAlert> =
+        local.getAllAlertsOnce()
+
+
     // ---------------- Cached Weather ----------------
     override suspend fun saveCachedWeather(response: WeatherResponse) {
         val city = response.city.name

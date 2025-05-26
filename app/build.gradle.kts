@@ -70,6 +70,8 @@ dependencies {
     // --- Lifecycle: ViewModel, LiveData ---
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+
     // Geocoding/Nominatim API for location search
     implementation("com.github.MKergall:osmbonuspack:6.9.0") // Includes Nominatim client
     // --- Material Design & AppCompat ---

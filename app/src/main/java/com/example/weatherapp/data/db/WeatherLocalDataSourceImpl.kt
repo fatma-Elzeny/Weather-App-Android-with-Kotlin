@@ -19,6 +19,10 @@ class WeatherLocalDataSourceImpl(private val dao: WeatherDAO) : WeatherLocalData
     override suspend fun deleteAlert(alert: WeatherAlert) = dao.deleteAlert(alert)
 
     override fun getAllAlerts(): LiveData<List<WeatherAlert>> = dao.getAllAlerts()
+    override suspend fun getAllAlertsOnce(): List<WeatherAlert> {
+        return dao.getAllAlertsOnce()
+    }
+
 
     // ----- Cached Weather -----
     override suspend fun insertCachedWeather(weather: CachedWeather) = dao.insertCachedWeather(weather)

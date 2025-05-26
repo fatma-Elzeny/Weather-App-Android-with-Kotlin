@@ -69,9 +69,9 @@ class AlertReceiver : BroadcastReceiver() {
 
         manager.notify(id, notification)
 
-        // ✅ DELETE alert by ID after trigger (New logic)
+      /*  // ✅ DELETE alert by ID after trigger (New logic)
         CoroutineScope(Dispatchers.IO).launch {
             WeatherDatabase.getInstance(context).weatherDao().deleteAlertById(id)
-        }
+        }*/
     }
 }

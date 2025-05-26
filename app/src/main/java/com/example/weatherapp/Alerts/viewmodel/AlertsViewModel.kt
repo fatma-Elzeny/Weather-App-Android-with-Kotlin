@@ -10,19 +10,33 @@ import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.model.WeatherAlert
 import com.example.weatherapp.data.repo.WeatherRepository
 import kotlinx.coroutines.launch
 
+
 class AlertsViewModel(
     private val repository: WeatherRepository,
     private val app: Application
 ) : AndroidViewModel(app), IAlertsViewModel {
-
     val alerts: LiveData<List<WeatherAlert>> = repository.getAllAlerts()
+    // ✅ LiveData filtered to exclude expired alerts from UI
+    val cleanedAlerts: LiveData<List<WeatherAlert>> = alerts.map { list ->
+        list.filter { it.toTime >= System.currentTimeMillis() }
+    }
 
-    @SuppressLint("ScheduleExactAlarm")
+
+    // ✅ Delete expired alerts from DB (called once on screen load)
+    suspend fun cleanUpExpiredAlertsOnce() {
+        val expired = repository.getAllAlertsOnce().filter { it.toTime < System.currentTimeMillis() }
+        expired.forEach {
+            repository.deleteAlert(it)
+            cancelAlarm(it.id)
+        }
+    }
+
     override fun addAlert(alert: WeatherAlert) = viewModelScope.launch {
         repository.insertAlert(alert)
         scheduleAlarm(alert)
@@ -32,20 +46,11 @@ class AlertsViewModel(
         repository.deleteAlert(alert)
         cancelAlarm(alert.id)
     }
-    fun cleanUpExpiredAlerts() = viewModelScope.launch {
-        val alerts = repository.getAllAlerts().value ?: return@launch
-        val now = System.currentTimeMillis()
-        alerts.filter { it.toTime < now }.forEach {
-            repository.deleteAlert(it)
-            cancelAlarm(it.id)
-        }
-    }
 
     @SuppressLint("ScheduleExactAlarm")
-    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun scheduleAlarm(alert: WeatherAlert) {
         val now = System.currentTimeMillis()
-        if (alert.fromTime < now) return  // ❗Don't schedule expired alarms
+        if (alert.fromTime < now) return // ✅ Skip if already expired
 
         val context = app.applicationContext
         val intent = Intent(context, AlertReceiver::class.java).apply {
@@ -59,13 +64,8 @@ class AlertsViewModel(
         )
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            alert.fromTime,
-            pendingIntent
-        )
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alert.fromTime, pendingIntent)
     }
-
 
     override fun cancelAlarm(id: Int) {
         val context = app.applicationContext
