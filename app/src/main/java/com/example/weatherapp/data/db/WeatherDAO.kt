@@ -34,6 +34,11 @@ interface WeatherDAO {
     @Query("SELECT * FROM alerts")
     fun getAllAlerts(): LiveData<List<WeatherAlert>>
 
+    @Query("DELETE FROM alerts WHERE id = :id")
+    suspend fun deleteAlertById(id: Int)
+    @Query("DELETE FROM alerts WHERE toTime < :currentTime")
+    suspend fun deleteExpiredAlerts(currentTime: Long)
+
     // ----- Cached Weather -----
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCachedWeather(weather: CachedWeather)
@@ -43,4 +48,5 @@ interface WeatherDAO {
 
     @Query("DELETE FROM cached_weather WHERE cityName = :city")
     suspend fun deleteCachedWeather(city: String)
+
 }

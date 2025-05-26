@@ -32,19 +32,32 @@ class AlertsViewModel(
         repository.deleteAlert(alert)
         cancelAlarm(alert.id)
     }
+    fun cleanUpExpiredAlerts() = viewModelScope.launch {
+        val alerts = repository.getAllAlerts().value ?: return@launch
+        val now = System.currentTimeMillis()
+        alerts.filter { it.toTime < now }.forEach {
+            repository.deleteAlert(it)
+            cancelAlarm(it.id)
+        }
+    }
 
     @SuppressLint("ScheduleExactAlarm")
     @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun scheduleAlarm(alert: WeatherAlert) {
+        val now = System.currentTimeMillis()
+        if (alert.fromTime < now) return  // ❗Don't schedule expired alarms
+
         val context = app.applicationContext
         val intent = Intent(context, AlertReceiver::class.java).apply {
             putExtra("id", alert.id)
             putExtra("isAlarm", alert.isActive)
         }
+
         val pendingIntent = PendingIntent.getBroadcast(
             context, alert.id, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
@@ -52,6 +65,7 @@ class AlertsViewModel(
             pendingIntent
         )
     }
+
 
     override fun cancelAlarm(id: Int) {
         val context = app.applicationContext

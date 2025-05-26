@@ -53,6 +53,7 @@ class AlertsActivity : AppCompatActivity() {
             }
             true
         }
+        viewModel.cleanUpExpiredAlerts()
 
         // Setup RecyclerView
         adapter = AlertListAdapter { alert ->
