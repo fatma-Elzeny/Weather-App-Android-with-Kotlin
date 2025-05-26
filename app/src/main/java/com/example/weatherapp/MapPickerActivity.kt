@@ -14,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.weatherapp.Settings.model.SettingsRepository
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -127,6 +128,8 @@ class MapPickerActivity : AppCompatActivity() {
     }
 
     private fun returnResultWithLocation(geoPoint: GeoPoint, name: String) {
+        SettingsRepository(applicationContext).saveMapLocation(geoPoint.latitude, geoPoint.longitude)
+
         Intent().apply {
             putExtra("lat", geoPoint.latitude)
             putExtra("lon", geoPoint.longitude)

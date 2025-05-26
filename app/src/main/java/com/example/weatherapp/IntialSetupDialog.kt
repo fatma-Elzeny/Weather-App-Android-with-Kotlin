@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.RadioButton
 import androidx.appcompat.widget.SwitchCompat
+import com.example.weatherapp.Settings.model.LocationMode
 
 class InitialSetupDialog(
     private val context: Context,
@@ -33,9 +34,10 @@ class InitialSetupDialog(
 
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             prefs.edit()
-                .putString("location_mode", if (isGps) "gps" else "map")
+                .putString("location_mode", if (isGps) LocationMode.GPS.name else LocationMode.MAP.name) // ✅ Save correct enum name
                 .putBoolean("notifications_enabled", notificationsEnabled)
                 .apply()
+
 
             dialog.dismiss()
 

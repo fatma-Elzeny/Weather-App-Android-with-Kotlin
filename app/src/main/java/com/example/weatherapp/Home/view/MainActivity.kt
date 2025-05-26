@@ -1,6 +1,7 @@
 package com.example.weatherapp.Home.view
 
 import android.content.Context
+import com.google.android.gms.location.LocationServices
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -56,7 +57,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dailyAdapter: DailyForecastAdapter
     private lateinit var settingsRepo: SettingsRepository
 
-    // ✅ NEW: Variables to check if user opened via Favorite
     private var overrideLat: Double? = null
     private var overrideLon: Double? = null
 
@@ -75,12 +75,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupToolbarDrawer()
         settingsRepo = SettingsRepository(applicationContext)
         val currentSettings = settingsRepo.loadSettings()
-        applyLanguage(currentSettings.language)
+       // applyLanguage(currentSettings.language)
 
         setupAdapters()
-        setupToolbarDrawer()
+       // setupToolbarDrawer()
 
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
@@ -91,11 +92,9 @@ class MainActivity : AppCompatActivity() {
 
         setupObservers()
 
-        // ✅ NEW: Read lat/lon if started from Favorite
         overrideLat = intent.getDoubleExtra("lat", Double.NaN)
         overrideLon = intent.getDoubleExtra("lon", Double.NaN)
 
-        // ✅ NEW: If coming from FavoritesActivity, use lat/lon directly and skip location mode
         if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) {
             viewModel.fetchForecast(
                 overrideLat!!,
@@ -105,7 +104,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Default behavior based on location mode
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()
             LocationMode.MAP -> {
@@ -121,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.navigationView)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        toolbar.title = "Weather"
+        toolbar.title = "Air Cast"
         val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -146,12 +144,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupObservers() {
         viewModel.forecast.observe(this) { response ->
-            val settings = settingsRepo.loadSettings()
             response?.let {
+                val settings = settingsRepo.loadSettings()
                 updateCurrentWeather(it, settings)
                 updateForecastLists(it.list, it.city.timezone)
-                val lastUpdate = System.currentTimeMillis()
-                showLastUpdated(lastUpdate)
+                showLastUpdated(System.currentTimeMillis())
             }
         }
 
@@ -174,46 +171,57 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentLocation() {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) return
+            != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
 
-        val location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        val settings = settingsRepo.loadSettings()
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            val settings = settingsRepo.loadSettings()
+            if (location != null) {
+                viewModel.fetchForecast(location.latitude, location.longitude, getUnit(settings.temperatureUnit))
+            } else {
+                fetchFromCacheOrNotify(settings)
+            }
+        }.addOnFailureListener {
+            fetchFromCacheOrNotify(settingsRepo.loadSettings())
+        }
+    }
 
-        if (location != null) {
-            viewModel.fetchForecast(location.latitude, location.longitude, getUnit(settings.temperatureUnit))
-        } else {
-            // ⛔ Offline fallback
-            lifecycleScope.launch {
-                val cached = WeatherDatabase.getInstance(this@MainActivity)
+    private fun fetchFromCacheOrNotify(settings: SettingsData) {
+        lifecycleScope.launch {
+            val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
+            val city = prefs.getString("last_city", null)
+            val cached = city?.let {
+                WeatherDatabase.getInstance(this@MainActivity)
                     .weatherDao()
-                    .getCachedWeather("Cairo") // or whatever default city
-                cached?.let {
-                    val response = Gson().fromJson(it.data, WeatherResponse::class.java)
-                    updateCurrentWeather(response, settings)
-                    updateForecastLists(response.list, response.city.timezone)
-                    showLastUpdated(it.lastUpdated)
-                } ?: Toast.makeText(this@MainActivity, "No cached data", Toast.LENGTH_SHORT).show()
+                    .getCachedWeather(it)
+            }
+
+            if (cached != null) {
+                val response = Gson().fromJson(cached.data, WeatherResponse::class.java)
+                updateCurrentWeather(response, settings)
+                updateForecastLists(response.list, response.city.timezone)
+                showLastUpdated(cached.lastUpdated)
+            } else {
+                viewModel.setError("No cached data") // ✅ Cleaner if using wrapper method
+
             }
         }
     }
 
-    private fun showLastUpdated(timestampMillis: Long) {
-        val sdf = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
-        val formatted = sdf.format(Date(timestampMillis))
-        binding.tvLastUpdated.text = "Last updated: $formatted"
-    }
 
     private fun updateCurrentWeather(response: WeatherResponse, settings: SettingsData) {
         val current = response.list.firstOrNull() ?: return
         binding.tvCity.text = response.city.name
-        val currentLocalTime = System.currentTimeMillis()
+        getSharedPreferences("prefs", MODE_PRIVATE)
+            .edit()
+            .putString("last_city", response.city.name)
+            .apply()
         binding.tvDateTime.text = SimpleDateFormat("EEEE, MMM d • HH:mm", Locale.getDefault())
             .apply { timeZone = TimeZone.getDefault() }
-            .format(Date(currentLocalTime))
-
-
+            .format(Date(System.currentTimeMillis()))
 
         val tempUnitSymbol = when (settings.temperatureUnit) {
             TemperatureUnit.CELSIUS -> "°C"
@@ -270,37 +278,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun formatDateTime(timestamp: Long, pattern: String, offsetSeconds: Int): String {
-        val sdf = SimpleDateFormat(pattern, Locale.getDefault())
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        val correctedTimestamp = (timestamp + offsetSeconds) * 1000
-        return sdf.format(Date(correctedTimestamp))
+    private fun showLastUpdated(timestampMillis: Long) {
+        val sdf = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
+        val formatted = sdf.format(Date(timestampMillis))
+        binding.tvLastUpdated.text = "Last updated: $formatted"
     }
 
+    private var currentLanguage: Language? = null
 
-
-    private fun applyLanguage(lang: Language) {
+  /*  private fun applyLanguage(lang: Language) {
+        if (currentLanguage == lang) return
+        currentLanguage = lang
         val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
         Locale.setDefault(locale)
         val config = resources.configuration
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
-
-        Handler(Looper.getMainLooper()).post {
-            if (!isFinishing && !isDestroyed) {
-                recreate()
-            }
+        if (!isFinishing && !isDestroyed) {
+            recreate()
         }
-    }
+    }*/
 
     override fun onResume() {
         super.onResume()
 
-        // ✅ NEW: Skip reload if user came from Favorite place
         if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) return
 
         val currentSettings = settingsRepo.loadSettings()
-        applyLanguage(currentSettings.language)
+     //   applyLanguage(currentSettings.language)
 
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()

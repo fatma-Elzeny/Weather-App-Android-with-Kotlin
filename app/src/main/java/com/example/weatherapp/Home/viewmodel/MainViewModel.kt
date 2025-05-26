@@ -21,6 +21,9 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel(), Ma
 
     private val _error = MutableLiveData<String?>()
     override val error: LiveData<String?> = _error
+    fun setError(message: String) {
+        _error.postValue(message)
+    }
 
     override fun fetchForecast(lat: Double, lon: Double, units: String) {
         viewModelScope.launch {
