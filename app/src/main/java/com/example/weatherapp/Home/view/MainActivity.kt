@@ -260,11 +260,24 @@ class MainActivity : AppCompatActivity() {
             WindSpeedUnit.MPH -> if (lang == Language.ARABIC) "${current.wind.speed * 2.23694} ميل/س" else "${current.wind.speed * 2.23694} mph"
         }
         binding.tvWindValue.text = windSpeed
+        // 🌡️ Feels like temperature
+        val feelsLike = current.main.feelsLike.toInt()
+        binding.tvFeelsLike.text = getString(R.string.feels_like_format, feelsLike)
+
+
 
         // 🌤️ Weather icon
         val iconCode = current.weather.firstOrNull()?.icon ?: "01d"
         val iconRes = WeatherIconMapper.getIconResource(iconCode)
         binding.imgWeatherIcon.setImageResource(iconRes)
+        val sunriseTime = response.city.sunrise // in seconds
+        val sunsetTime = response.city.sunset   // in seconds
+
+        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+        timeFormat.timeZone = TimeZone.getDefault()
+
+        binding.tvSunriseTime.text = timeFormat.format(Date(sunriseTime * 1000))
+        binding.tvSunsetTime.text = timeFormat.format(Date(sunsetTime * 1000))
 
         // Inside updateCurrentWeather()
         getSharedPreferences("prefs", MODE_PRIVATE)

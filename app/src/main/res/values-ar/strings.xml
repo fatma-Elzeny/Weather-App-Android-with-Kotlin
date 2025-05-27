@@ -32,6 +32,10 @@
     <string name="menu_favorites">المفضلة</string>
     <string name="menu_alerts">التنبيهات</string>
     <string name="menu_settings">الإعدادات</string>
+    <string name="sunset">غروب الشمس</string>
+    <string name="sunrise">شروق الشمس</string>
+    <string name="feels_like_format">يشعر به كـ: %1$d°</string>
+
     <string-array name="temperature_units">
         <item>سليزيوس</item>
         <item>فرنهايت</item>
