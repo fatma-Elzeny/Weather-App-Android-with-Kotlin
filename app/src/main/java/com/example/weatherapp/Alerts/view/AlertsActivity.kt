@@ -38,7 +38,8 @@ class AlertsActivity : AppCompatActivity() {
         setContentView(binding.root)
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
-            local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao())
+            local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao()),
+            this
         )
         val factory = AlertsViewModelFactory(repository, application)
         viewModel = ViewModelProvider(this, factory).get(AlertsViewModel::class.java)

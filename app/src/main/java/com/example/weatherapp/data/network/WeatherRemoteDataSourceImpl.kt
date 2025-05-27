@@ -9,10 +9,11 @@ class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) : W
         lat: Double,
         lon: Double,
         units: String,
+        lang:String,
         apiKey: String
     ): WeatherResponse {
         return withContext(Dispatchers.IO) {
-            apiService.getForecast(lat, lon, units, apiKey)
+            apiService.getForecast(lat, lon, units,lang, apiKey)
         }
 
     }

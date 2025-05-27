@@ -9,7 +9,8 @@ interface WeatherRepository {
     suspend fun getWeatherForecast(
         lat: Double,
         lon: Double,
-        units: String
+        units: String,
+        lang : String
     ): WeatherResponse
 
 

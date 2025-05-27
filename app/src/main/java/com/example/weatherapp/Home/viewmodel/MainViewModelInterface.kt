@@ -7,5 +7,5 @@ interface MainViewModelInterface {
     val forecast: LiveData<WeatherResponse>
     val loading: LiveData<Boolean>
     val error: LiveData<String?>
-    fun fetchForecast(lat: Double, lon: Double, units: String)
+    fun fetchForecast(lat: Double, lon: Double, units: String, lang: String)
 }

@@ -9,5 +9,6 @@ data class City(
     val population: Int,
     val timezone: Int,
     val sunrise: Long,
-    val sunset: Long
+    val sunset: Long,
+    val local_names: Map<String, String>?
 )

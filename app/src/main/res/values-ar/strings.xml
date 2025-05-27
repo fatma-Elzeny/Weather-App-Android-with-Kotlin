@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_toolbar">الاعدادات</string>
+    <string name="enable_notifications">تفعيل الإشعارات</string>
+    <string name="language">اللغة</string>
+    <string name="select_location">حدد الموقع</string>
+    <string name="location_permission_required">اذن الموقع مطلوب  </string>
+    <string name="no_cached_data">لا توجد داتا مخزنة </string>
+    <string name="last_updated">آخر تحديث</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="pressure">الضغط</string>
+    <string name="speed_format">%d كم/س</string>
+    <string name="arabic_english">عربي / انجليزي</string>
+    <string name="location_settings">اعدادات الموقع\n</string>
+    <string name="wind_speed_unit">وحدة قياس سرعة الرياح</string>
+    <string name="gps">الموقع</string>
+    <string name="map">Map\n</string>
+    <string name="map2">الخريطة</string>
+    <string name="notification">الاشعارات</string>
+    <string name="temperature_unit">وحدة قياس الحرارة</string>
+
+</resources>

@@ -1,13 +1,11 @@
 package com.example.weatherapp.Home.view
 
-import android.content.Context
+import android.annotation.SuppressLint
 import com.google.android.gms.location.LocationServices
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.LocationManager
+import android.location.Geocoder
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,6 +41,7 @@ import com.example.weatherapp.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     private var overrideLat: Double? = null
     private var overrideLon: Double? = null
+    private var currentLanguage: Language? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         if (isGranted) {
             getCurrentLocation()
         } else {
-            Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.location_permission_required), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -78,14 +78,15 @@ class MainActivity : AppCompatActivity() {
         setupToolbarDrawer()
         settingsRepo = SettingsRepository(applicationContext)
         val currentSettings = settingsRepo.loadSettings()
-       // applyLanguage(currentSettings.language)
+        currentLanguage = currentSettings.language
+        applyLanguage(currentSettings.language)
 
         setupAdapters()
-       // setupToolbarDrawer()
 
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
-            local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao())
+            local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao()),
+            this
         )
         val factory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
@@ -99,7 +100,8 @@ class MainActivity : AppCompatActivity() {
             viewModel.fetchForecast(
                 overrideLat!!,
                 overrideLon!!,
-                getUnit(currentSettings.temperatureUnit)
+                getUnit(currentSettings.temperatureUnit),
+                getLang(currentSettings.language)
             )
             return
         }
@@ -109,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             LocationMode.MAP -> {
                 val lat = settingsRepo.getMapLat()
                 val lon = settingsRepo.getMapLon()
-                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit))
+                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit), getLang(currentSettings.language))
             }
         }
     }
@@ -119,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val navView = findViewById<NavigationView>(R.id.navigationView)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        toolbar.title = "Air Cast"
+        toolbar.title = getString(R.string.app_name)
         val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -137,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupAdapters() {
         hourlyAdapter = HourlyForecastAdapter(0)
-        dailyAdapter = DailyForecastAdapter()
+        dailyAdapter = DailyForecastAdapter(this)
         binding.rvHourly.adapter = hourlyAdapter
         binding.rvDaily.adapter = dailyAdapter
     }
@@ -148,7 +150,7 @@ class MainActivity : AppCompatActivity() {
                 val settings = settingsRepo.loadSettings()
                 updateCurrentWeather(it, settings)
                 updateForecastLists(it.list, it.city.timezone)
-                showLastUpdated(System.currentTimeMillis())
+                showLastUpdated(System.currentTimeMillis(), settings.language)
             }
         }
 
@@ -173,14 +175,12 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
+            != PackageManager.PERMISSION_GRANTED) return
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             val settings = settingsRepo.loadSettings()
             if (location != null) {
-                viewModel.fetchForecast(location.latitude, location.longitude, getUnit(settings.temperatureUnit))
+                viewModel.fetchForecast(location.latitude, location.longitude, getUnit(settings.temperatureUnit), getLang(settings.language))
             } else {
                 fetchFromCacheOrNotify(settings)
             }
@@ -203,49 +203,65 @@ class MainActivity : AppCompatActivity() {
                 val response = Gson().fromJson(cached.data, WeatherResponse::class.java)
                 updateCurrentWeather(response, settings)
                 updateForecastLists(response.list, response.city.timezone)
-                showLastUpdated(cached.lastUpdated)
+                showLastUpdated(cached.lastUpdated, settings.language)
             } else {
-                viewModel.setError("No cached data") // ✅ Cleaner if using wrapper method
-
+                viewModel.setError(getString(R.string.no_cached_data))
             }
         }
     }
 
-
     private fun updateCurrentWeather(response: WeatherResponse, settings: SettingsData) {
         val current = response.list.firstOrNull() ?: return
-        binding.tvCity.text = response.city.name
-        getSharedPreferences("prefs", MODE_PRIVATE)
-            .edit()
-            .putString("last_city", response.city.name)
-            .apply()
-        binding.tvDateTime.text = SimpleDateFormat("EEEE, MMM d • HH:mm", Locale.getDefault())
+
+        val lang = settings.language
+        val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
+
+        val langCode = if (lang == Language.ARABIC) "ar" else "en"
+        val localizedCity = response.city.local_names?.get(langCode) ?: response.city.name
+        binding.tvCity.text = localizedCity
+
+        // 🕒 Format current local date/time
+        binding.tvDateTime.text = SimpleDateFormat("EEEE، d MMM • HH:mm", locale)
             .apply { timeZone = TimeZone.getDefault() }
             .format(Date(System.currentTimeMillis()))
-
-        val tempUnitSymbol = when (settings.temperatureUnit) {
-            TemperatureUnit.CELSIUS -> "°C"
-            TemperatureUnit.FAHRENHEIT -> "°F"
+        val numberFormat = NumberFormat.getInstance(locale)
+        // 🌡️ Temperature
+        val tempUnit = when (settings.temperatureUnit) {
+            TemperatureUnit.CELSIUS -> if (lang == Language.ARABIC) "درجة مئوية" else "°C"
+            TemperatureUnit.FAHRENHEIT -> if (lang == Language.ARABIC) "فهرنهايت" else "°F"
         }
-        binding.tvTemp.text = "${current.main.temp.toInt()}$tempUnitSymbol"
-        binding.tvWeatherDesc.text = current.weather.firstOrNull()?.description?.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-        }
+        val temp = numberFormat.format(current.main.temp.toInt())
 
-        binding.tvHumidityValue.text = "${current.main.humidity}%"
-        binding.tvPressureValue.text = "${current.main.pressure} hPa"
+        binding.tvTemp.text = "$temp $tempUnit"
 
+        // ☁️ Weather description
+        val weatherDescription = current.weather.firstOrNull()?.description?.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+        } ?: ""
+        binding.tvWeatherDesc.text = weatherDescription
+
+        // 💧 Humidity (already percentage-based)
+        binding.tvHumidityValue.text =
+            if (lang == Language.ARABIC) "${current.main.humidity}% رطوبة" else "${current.main.humidity}%"
+
+        // 📊 Pressure
+        binding.tvPressureValue.text =
+            if (lang == Language.ARABIC) "${current.main.pressure} هيكتوباسكال" else "${current.main.pressure} hPa"
+
+        // 🌬️ Wind speed
         val windSpeed = when (settings.windSpeedUnit) {
-            WindSpeedUnit.M_S -> "${current.wind.speed} m/s"
-            WindSpeedUnit.KM_H -> "${current.wind.speed * 3.6} km/h"
-            WindSpeedUnit.MPH -> "${current.wind.speed * 2.23694} mph"
+            WindSpeedUnit.M_S -> if (lang == Language.ARABIC) "${current.wind.speed} م/ث" else "${current.wind.speed} m/s"
+            WindSpeedUnit.KM_H -> if (lang == Language.ARABIC) "${current.wind.speed * 3.6} كم/س" else "${current.wind.speed * 3.6} km/h"
+            WindSpeedUnit.MPH -> if (lang == Language.ARABIC) "${current.wind.speed * 2.23694} ميل/س" else "${current.wind.speed * 2.23694} mph"
         }
         binding.tvWindValue.text = windSpeed
 
+        // 🌤️ Weather icon
         val iconCode = current.weather.firstOrNull()?.icon ?: "01d"
         val iconRes = WeatherIconMapper.getIconResource(iconCode)
         binding.imgWeatherIcon.setImageResource(iconRes)
     }
+
 
     private fun updateForecastLists(items: List<ForecastItem>, timezoneOffsetSeconds: Int) {
         hourlyAdapter = HourlyForecastAdapter(timezoneOffsetSeconds)
@@ -272,47 +288,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUnit(unit: TemperatureUnit): String {
-        return when (unit) {
-            TemperatureUnit.CELSIUS -> "metric"
-            TemperatureUnit.FAHRENHEIT -> "imperial"
-        }
+        return if (unit == TemperatureUnit.CELSIUS) "metric" else "imperial"
     }
 
-    private fun showLastUpdated(timestampMillis: Long) {
-        val sdf = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
-        val formatted = sdf.format(Date(timestampMillis))
-        binding.tvLastUpdated.text = "Last updated: $formatted"
+    private fun getLang(language: Language): String {
+        return if (language == Language.ARABIC) "ar" else "en"
     }
 
-    private var currentLanguage: Language? = null
-
-  /*  private fun applyLanguage(lang: Language) {
-        if (currentLanguage == lang) return
-        currentLanguage = lang
+    @SuppressLint("StringFormatInvalid")
+    private fun showLastUpdated(timestampMillis: Long, lang: Language) {
         val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
-        Locale.setDefault(locale)
+        val sdf = SimpleDateFormat("MMM dd, yyyy • HH:mm", locale)
+        binding.tvLastUpdated.text = getString(R.string.last_updated, sdf.format(Date(timestampMillis)))
+    }
+
+    private fun applyLanguage(lang: Language) {
+        val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
         val config = resources.configuration
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
-        if (!isFinishing && !isDestroyed) {
-            recreate()
-        }
-    }*/
+    }
 
     override fun onResume() {
         super.onResume()
 
-        if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) return
-
         val currentSettings = settingsRepo.loadSettings()
-     //   applyLanguage(currentSettings.language)
+        if (currentLanguage != currentSettings.language) {
+            currentLanguage = currentSettings.language
+            applyLanguage(currentSettings.language)
+            // optionally re-fetch data if language changed
+        }
+
+        if (!overrideLat!!.isNaN() && !overrideLon!!.isNaN()) return
 
         when (currentSettings.locationMode) {
             LocationMode.GPS -> checkLocationPermission()
             LocationMode.MAP -> {
                 val lat = settingsRepo.getMapLat()
                 val lon = settingsRepo.getMapLon()
-                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit))
+                viewModel.fetchForecast(lat, lon, getUnit(currentSettings.temperatureUnit), getLang(currentSettings.language))
             }
         }
     }

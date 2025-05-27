@@ -1,5 +1,6 @@
 package com.example.weatherapp.Settings.view
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,6 +21,7 @@ import androidx.work.WorkManager
 import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.view.MainActivity
+import com.example.weatherapp.LocaleHelper
 import com.example.weatherapp.MapPickerActivity
 import com.example.weatherapp.R
 import com.example.weatherapp.Settings.model.Language
@@ -47,6 +49,13 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
         }
     }
+
+    override fun attachBaseContext(newBase: Context?) {
+        val langCode = LocaleHelper.getLanguage(newBase!!)
+        val context = LocaleHelper.wrap(newBase, langCode)
+        super.attachBaseContext(context)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -94,7 +103,17 @@ class SettingsActivity : AppCompatActivity() {
         binding.languageSwitch.setOnCheckedChangeListener { _, isChecked ->
             val lang = if (isChecked) Language.ARABIC else Language.ENGLISH
             viewModel.updateLanguage(lang)
-            applyLanguage(lang)
+
+            // 👇 Update locale without recreate
+            val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
+            Locale.setDefault(locale)
+            val config = resources.configuration
+            config.setLocale(locale)
+            resources.updateConfiguration(config, resources.displayMetrics)
+
+            // Rebind strings manually if needed (optional)
+            binding.toolbar.title = getString(R.string.settings_toolbar)
+            binding.notificationsSwitch.text = getString(R.string.enable_notifications)
         }
 
         binding.notificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -123,7 +142,7 @@ class SettingsActivity : AppCompatActivity() {
         startActivityForResult(intent, MAP_PICKER_REQUEST_CODE)
     }
 
-    private fun applyLanguage(lang: Language) {
+  /*  private fun applyLanguage(lang: Language) {
         val locale = if (lang == Language.ARABIC) Locale("ar") else Locale("en")
         Locale.setDefault(locale)
         val config = resources.configuration
@@ -136,7 +155,7 @@ class SettingsActivity : AppCompatActivity() {
                 recreate()
             }
         }
-    }
+    }*/
 
     private fun handleNotifications(enabled: Boolean) {
         if (enabled) {

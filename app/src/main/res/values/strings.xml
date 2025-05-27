@@ -21,5 +21,19 @@
     <string name="speed_format">%d km/h</string>
     <string name="arabic_english">Arabic / English</string>
     <string name="enable_notifications">Enable Notifications</string>
+    <string name="settings_toolbar">Settings</string>
+    <string name="language">Language</string>
+    <string name="select_location">Select Location</string>
+    <string name="location_permission_required">Location Permission Required </string>
+
+    <string name="no_cached_data">No Cashed Data </string>
+    <string name="last_updated">Last Updated</string>
+    <string name="location_settings">Location Settings\n</string>
+    <string name="wind_speed_unit">Wind Speed Unit</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map\n</string>
+    <string name="map2">Map</string>
+    <string name="notification">Notification</string>
+    <string name="temperature_unit">Temperature Unit</string>
 
 </resources>

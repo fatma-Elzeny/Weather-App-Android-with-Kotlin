@@ -25,11 +25,11 @@ class MainViewModel(private val repository: WeatherRepository) : ViewModel(), Ma
         _error.postValue(message)
     }
 
-    override fun fetchForecast(lat: Double, lon: Double, units: String) {
+    override fun fetchForecast(lat: Double, lon: Double, units: String, lang: String) {
         viewModelScope.launch {
             _loading.value = true
             try {
-                val response = repository.getWeatherForecast(lat, lon, units)
+                val response = repository.getWeatherForecast(lat, lon,units,lang)
                 _forecast.value = response
                 _error.value = null
             } catch (e: Exception) {

@@ -12,6 +12,7 @@ interface WeatherApiService {
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("units") units: String,
+        @Query("lang") lang: String,
         @Query("appid") apiKey: String ="0227d528304276aa7b3f837f13e1fd21"
     ): WeatherResponse
 

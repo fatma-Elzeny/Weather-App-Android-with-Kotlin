@@ -7,6 +7,7 @@ interface WeatherRemoteDataSource {
         lat: Double,
         lon: Double,
         units: String,
+        lang :String,
         apiKey: String
     ): WeatherResponse
 

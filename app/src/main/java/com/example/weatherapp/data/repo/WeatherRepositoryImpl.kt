@@ -1,7 +1,10 @@
 package com.example.weatherapp.data.repo
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import com.example.weatherapp.BuildConfig
+import com.example.weatherapp.Settings.model.Language
+import com.example.weatherapp.Settings.model.SettingsRepository
 import com.example.weatherapp.data.db.WeatherLocalDataSource
 import com.example.weatherapp.data.model.CachedWeather
 import com.example.weatherapp.data.model.FavoriteLocation
@@ -12,7 +15,8 @@ import com.google.gson.Gson
 
 class WeatherRepositoryImpl(
     private val remote: WeatherRemoteDataSource,
-    private val local: WeatherLocalDataSource
+    private val local: WeatherLocalDataSource,
+    private val context: Context
 ) : WeatherRepository {
 
     private val gson = Gson()
@@ -20,10 +24,14 @@ class WeatherRepositoryImpl(
     override suspend fun getWeatherForecast(
         lat: Double,
         lon: Double,
-        units: String
+        units: String,
+        lang: String
     ): WeatherResponse {
+        val lang = SettingsRepository(context).loadSettings().language
+        val langCode = if (lang == Language.ARABIC) "ar" else "en"
+
         val response = remote.getWeatherForecast(
-            lat, lon, units, "0227d528304276aa7b3f837f13e1fd21"
+            lat, lon, units, langCode,"0227d528304276aa7b3f837f13e1fd21"
         )
         saveCachedWeather(response)
         return response
