@@ -21,4 +21,5 @@ interface WeatherLocalDataSource {
     suspend fun getCachedWeather(city: String): CachedWeather?
     suspend fun deleteCachedWeather(city: String)
     suspend fun getAllAlertsOnce(): List<WeatherAlert>
+    suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): CachedWeather?
 }

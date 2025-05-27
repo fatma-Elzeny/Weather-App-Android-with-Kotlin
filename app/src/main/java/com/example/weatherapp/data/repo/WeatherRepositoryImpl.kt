@@ -30,11 +30,14 @@ class WeatherRepositoryImpl(
         val lang = SettingsRepository(context).loadSettings().language
         val langCode = if (lang == Language.ARABIC) "ar" else "en"
 
-        val response = remote.getWeatherForecast(
-            lat, lon, units, langCode,"0227d528304276aa7b3f837f13e1fd21"
-        )
-        saveCachedWeather(response)
-        return response
+        return try {
+            val response = remote.getWeatherForecast(lat, lon, units, langCode, "API_KEY")
+            saveCachedWeather(response)
+            response
+        } catch (e: Exception) {
+            // Fallback to cached data by coordinates
+            getCachedWeatherByCoord(lat, lon) ?: throw e
+        }
     }
 
     // ---------------- Favorites ----------------
@@ -74,7 +77,10 @@ class WeatherRepositoryImpl(
         )
         local.insertCachedWeather(cachedWeather)
     }
-
+    override suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): WeatherResponse? {
+        val cached = local.getCachedWeatherByCoord(lat, lon)
+        return cached?.let { gson.fromJson(it.data, WeatherResponse::class.java) }
+    }
     override suspend fun getCachedWeather(city: String): WeatherResponse? {
         val cached = local.getCachedWeather(city)
         return cached?.let {

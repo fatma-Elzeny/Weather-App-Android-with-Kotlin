@@ -30,4 +30,5 @@ interface WeatherRepository {
     // Cached Weather
     suspend fun saveCachedWeather(response: WeatherResponse)
     suspend fun getCachedWeather(city: String): WeatherResponse?
+    suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): WeatherResponse?
 }

@@ -53,4 +53,7 @@ interface WeatherDAO {
     @Query("DELETE FROM cached_weather WHERE cityName = :city")
     suspend fun deleteCachedWeather(city: String)
 
+    @Query("SELECT * FROM cached_weather WHERE lat = :lat AND lon = :lon")
+    suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): CachedWeather?
+
 }

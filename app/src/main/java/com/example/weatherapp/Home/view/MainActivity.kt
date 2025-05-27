@@ -161,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.error.observe(this) { error ->
             error?.let {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                fetchFromCacheOrNotify(settingsRepo.loadSettings())
             }
         }
     }
@@ -264,6 +265,13 @@ class MainActivity : AppCompatActivity() {
         val iconCode = current.weather.firstOrNull()?.icon ?: "01d"
         val iconRes = WeatherIconMapper.getIconResource(iconCode)
         binding.imgWeatherIcon.setImageResource(iconRes)
+
+        // Inside updateCurrentWeather()
+        getSharedPreferences("prefs", MODE_PRIVATE)
+            .edit()
+            .putString("last_city", response.city.name) // ✅ Save for fallback
+            .apply()
+
     }
 
 

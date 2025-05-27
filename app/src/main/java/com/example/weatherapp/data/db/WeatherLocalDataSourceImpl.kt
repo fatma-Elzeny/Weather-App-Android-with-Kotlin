@@ -30,4 +30,6 @@ class WeatherLocalDataSourceImpl(private val dao: WeatherDAO) : WeatherLocalData
     override suspend fun getCachedWeather(city: String): CachedWeather? = dao.getCachedWeather(city)
 
     override suspend fun deleteCachedWeather(city: String) = dao.deleteCachedWeather(city)
+    override suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): CachedWeather? =
+        dao.getCachedWeatherByCoord(lat, lon)
 }
