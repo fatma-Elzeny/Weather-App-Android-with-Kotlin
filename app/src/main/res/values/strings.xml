@@ -46,6 +46,22 @@
     <string name="alerts_title">Alerts</string>
     <string name="delete_this_alert">Delete this alert?</string>
     <string name="no_alerts">No alerts available</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_alerts">Alerts</string>
+    <string name="menu_settings">Settings</string>
+
+    <string-array name="temperature_units">
+        <item>Celsius</item>
+        <item>Fahrenheit</item>
+    </string-array>
+
+    <string-array name="wind_speed_units">
+        <item>m/s</item>
+        <item>km/h</item>
+        <item>mph</item>
+    </string-array>
+
 
 
 

@@ -1,6 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nav_home" android:title="Home" android:icon="@drawable/ic_home"/>
-    <item android:id="@+id/nav_favorites" android:title="Favourites" android:icon="@drawable/ic_favorite"/>
-    <item android:id="@+id/nav_alerts" android:title="Alerts" android:icon="@drawable/ic_alert"/>
-    <item android:id="@+id/nav_settings" android:title="Settings" android:icon="@drawable/ic_settings"/>
+    <item
+        android:id="@+id/nav_home"
+        android:title="@string/menu_home"
+        android:icon="@drawable/ic_home"/>
+    <item
+        android:id="@+id/nav_favorites"
+        android:title="@string/menu_favorites"
+        android:icon="@drawable/ic_favorite"/>
+    <item
+        android:id="@+id/nav_alerts"
+        android:title="@string/menu_alerts"
+        android:icon="@drawable/ic_alert"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:title="@string/menu_settings"
+        android:icon="@drawable/ic_settings"/>
 </menu>

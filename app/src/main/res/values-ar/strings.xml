@@ -28,6 +28,20 @@
     <string name="alerts_title">التنبيهات</string>
     <string name="delete_this_alert">هل تريد حذف هذا التنبيه؟</string>
     <string name="no_alerts">لا توجد تنبيهات</string>
+    <string name="menu_home">الرئيسية</string>
+    <string name="menu_favorites">المفضلة</string>
+    <string name="menu_alerts">التنبيهات</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string-array name="temperature_units">
+        <item>سليزيوس</item>
+        <item>فرنهايت</item>
+    </string-array>
+
+    <string-array name="wind_speed_units">
+        <item>م/ث</item>
+        <item>كم/س</item>
+        <item>ميل/س</item>
+    </string-array>
 
 
 </resources>

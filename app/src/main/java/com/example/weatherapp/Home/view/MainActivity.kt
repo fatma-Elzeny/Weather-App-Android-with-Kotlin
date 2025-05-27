@@ -117,8 +117,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupToolbarDrawer() {
+
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
         val navView = findViewById<NavigationView>(R.id.navigationView)
+        navView.menu.clear() // 🧹 Clear existing menu
+        navView.inflateMenu(R.menu.drawer_menu) // 🔄 Re-inflate to apply new language
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.title = getString(R.string.app_name)
