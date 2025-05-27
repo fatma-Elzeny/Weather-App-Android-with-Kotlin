@@ -24,7 +24,7 @@
             android:elevation="4dp"
             android:minHeight="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:title="Alerts"
+            app:title="@string/alerts_title"
             app:titleTextColor="@android:color/white" />
 
         <!-- Favorite List -->
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="No Alerts"
+                android:text="@string/no_alerts"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
         </LinearLayout>

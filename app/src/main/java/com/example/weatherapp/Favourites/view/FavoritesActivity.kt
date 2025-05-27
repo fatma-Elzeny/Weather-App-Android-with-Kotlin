@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.Alerts.view.AlertsActivity
+import com.example.weatherapp.BaseActivity
 import com.example.weatherapp.Favourites.viewmodel.FavoritesViewModel
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.MapPickerActivity
@@ -18,7 +19,7 @@ import com.example.weatherapp.Settings.view.SettingsActivity
 import com.example.weatherapp.data.model.FavoriteLocation
 import com.example.weatherapp.databinding.ActivityFavoritesBinding
 
-class FavoritesActivity : AppCompatActivity() {
+class FavoritesActivity : BaseActivity() {
     private lateinit var binding: ActivityFavoritesBinding
     private val viewModel: FavoritesViewModel by viewModels()
     private lateinit var adapter: FavoritesAdapter
@@ -52,10 +53,10 @@ class FavoritesActivity : AppCompatActivity() {
             },
             onDeleteClick = { location ->
                 AlertDialog.Builder(this)
-                    .setTitle("Delete")
-                    .setMessage("Are you sure you want to delete ${location.name}?")
-                    .setPositiveButton("Yes") { _, _ -> viewModel.removeFavorite(location) }
-                    .setNegativeButton("Cancel", null)
+                    .setTitle(getString(R.string.delete))
+                    .setMessage(getString(R.string.confirm_delete, location.name))
+                    .setPositiveButton(getString(R.string.yes)){_,_ ->viewModel.removeFavorite(location)}
+                    .setNegativeButton(getString(R.string.cancel),null)
                     .show()
             }
         )
@@ -85,6 +86,11 @@ class FavoritesActivity : AppCompatActivity() {
             }
             true
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        binding.toolbar.title = getString(R.string.favorites_title)
+        binding.tvNoPlaces.text = getString(R.string.no_places)
     }
 
     private fun Double.format(digits: Int) = "%.${digits}f".format(this)

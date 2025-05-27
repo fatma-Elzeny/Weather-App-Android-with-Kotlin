@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.Alerts.viewmodel.AlertsViewModel
 import com.example.weatherapp.Alerts.viewmodel.AlertsViewModelFactory
+import com.example.weatherapp.BaseActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.R
@@ -26,7 +27,7 @@ import com.example.weatherapp.data.repo.WeatherRepositoryImpl
 import com.example.weatherapp.databinding.ActivityAlertsBinding
 import kotlinx.coroutines.launch
 
-class AlertsActivity : AppCompatActivity() {
+class AlertsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAlertsBinding
     private lateinit var viewModel: AlertsViewModel
@@ -64,10 +65,10 @@ class AlertsActivity : AppCompatActivity() {
         // Setup RecyclerView
         adapter = AlertListAdapter { alert ->
             AlertDialog.Builder(this)
-                .setTitle("Delete")
-                .setMessage("Delete this alert?")
-                .setPositiveButton("Yes") { _, _ -> viewModel.deleteAlert(alert) }
-                .setNegativeButton("Cancel", null)
+                .setTitle(getString(R.string.delete))
+                .setMessage(getString(R.string.delete_this_alert))
+                .setPositiveButton(getString(R.string.yes)) { _, _ -> viewModel.deleteAlert(alert) }
+                .setNegativeButton(getString(R.string.cancel), null)
                 .show()
         }
         binding.recyclerAlerts.adapter = adapter
@@ -85,5 +86,10 @@ class AlertsActivity : AppCompatActivity() {
                 viewModel.addAlert(alert) // Simplified callback
             }.show()
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        binding.tvNoAlerts.text = getString(R.string.no_alerts)
+        binding.toolbar.title = getString(R.string.alerts_title)
     }
 }

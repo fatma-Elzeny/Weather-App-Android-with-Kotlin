@@ -36,4 +36,17 @@
     <string name="notification">Notification</string>
     <string name="temperature_unit">Temperature Unit</string>
 
+    <!-- res/values/strings.xml -->
+    <string name="delete">Delete</string>
+    <string name="confirm_delete">Are you sure you want to delete %1$s?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_places">No favorite places</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="alerts_title">Alerts</string>
+    <string name="delete_this_alert">Delete this alert?</string>
+    <string name="no_alerts">No alerts available</string>
+
+
+
 </resources>

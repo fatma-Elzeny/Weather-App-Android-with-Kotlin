@@ -19,5 +19,15 @@
     <string name="map2">الخريطة</string>
     <string name="notification">الاشعارات</string>
     <string name="temperature_unit">وحدة قياس الحرارة</string>
+    <string name="delete">حذف</string>
+    <string name="confirm_delete">هل أنت متأكد من حذف %1$s؟</string>
+    <string name="yes">نعم</string>
+    <string name="cancel">إلغاء</string>
+    <string name="no_places">لا توجد أماكن مفضلة</string>
+    <string name="favorites_title">المفضلة</string>
+    <string name="alerts_title">التنبيهات</string>
+    <string name="delete_this_alert">هل تريد حذف هذا التنبيه؟</string>
+    <string name="no_alerts">لا توجد تنبيهات</string>
+
 
 </resources>

@@ -45,6 +45,11 @@ class DailyForecastAdapter(
             val tempMax = item.main.tempMax.toInt()
             view.findViewById<TextView>(R.id.tvDailyTemp).text = "$tempMin° / $tempMax°"
 
+            val desc = item.weather.firstOrNull()?.description ?: ""
+            view.findViewById<TextView>(R.id.tvDailyDesc).text = desc.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+            }
+
             // 🌤️ Weather icon
             val iconCode = item.weather.firstOrNull()?.icon ?: "01d"
             val iconRes = WeatherIconMapper.getIconResource(iconCode)
