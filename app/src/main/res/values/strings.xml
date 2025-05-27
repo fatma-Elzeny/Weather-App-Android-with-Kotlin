@@ -27,7 +27,7 @@
     <string name="location_permission_required">Location Permission Required </string>
 
     <string name="no_cached_data">No Cashed Data </string>
-    <string name="last_updated">Last Updated</string>
+    <string name="last_updated">Last updated: %1$s</string>
     <string name="location_settings">Location Settings\n</string>
     <string name="wind_speed_unit">Wind Speed Unit</string>
     <string name="gps">GPS</string>

@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.tvWindValue.text = windSpeed
         // 🌡️ Feels like temperature
-        val feelsLike = current.main.feelsLike.toInt()
+        val feelsLike = if (current.main.feelsLike == 0.0) current.main.temp else current.main.feelsLike
         binding.tvFeelsLike.text = getString(R.string.feels_like_format, feelsLike)
 
 
