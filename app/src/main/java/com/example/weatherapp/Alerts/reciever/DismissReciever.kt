@@ -1,4 +1,4 @@
-package com.example.weatherapp.Alerts.viewmodel
+package com.example.weatherapp.Alerts.reciever
 
 import android.app.NotificationManager
 import android.content.BroadcastReceiver

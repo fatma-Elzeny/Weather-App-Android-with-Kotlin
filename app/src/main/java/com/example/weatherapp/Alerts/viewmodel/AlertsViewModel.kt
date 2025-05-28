@@ -1,17 +1,16 @@
 package com.example.weatherapp.Alerts.viewmodel
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.annotation.RequiresPermission
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.Alerts.reciever.AlertReceiver
 import com.example.weatherapp.data.model.WeatherAlert
 import com.example.weatherapp.data.repo.WeatherRepository
 import kotlinx.coroutines.launch
