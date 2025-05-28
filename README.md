@@ -78,7 +78,7 @@ AirCast follows the **MVVM (Model-View-ViewModel)** design pattern and clean arc
 ![Subdirectory Image](images/Home.png)
 ![Subdirectory Image](images/Favourite.png)
 ![Subdirectory Image](images/Settings.png)
-![Subdirectory Image](images/ALert.png)
+![Subdirectory Image](images/Alert.png)
 
 ##  Data Source
 
