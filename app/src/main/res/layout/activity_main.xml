@@ -98,17 +98,6 @@
                     android:textSize="48sp"
                     android:textStyle="bold"
                     android:layout_gravity="center" />
-
-                <TextView
-                    android:id="@+id/tvFeelsLike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/feels_like_format"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
-
-
                 <ImageView
                     android:id="@+id/imgWeatherIcon"
                     android:layout_width="64dp"

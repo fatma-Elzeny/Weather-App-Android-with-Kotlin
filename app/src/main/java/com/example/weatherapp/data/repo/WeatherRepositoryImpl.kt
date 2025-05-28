@@ -2,7 +2,6 @@ package com.example.weatherapp.data.repo
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import com.example.weatherapp.BuildConfig
 import com.example.weatherapp.Settings.model.Language
 import com.example.weatherapp.Settings.model.SettingsRepository
 import com.example.weatherapp.data.db.WeatherLocalDataSource
@@ -31,7 +30,7 @@ class WeatherRepositoryImpl(
         val langCode = if (lang == Language.ARABIC) "ar" else "en"
 
         return try {
-            val response = remote.getWeatherForecast(lat, lon, units, langCode, "API_KEY")
+            val response = remote.getWeatherForecast(lat, lon, units, langCode, "0227d528304276aa7b3f837f13e1fd21")
             saveCachedWeather(response)
             response
         } catch (e: Exception) {

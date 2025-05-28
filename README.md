@@ -59,7 +59,6 @@ AirCast follows the **MVVM (Model-View-ViewModel)** design pattern and clean arc
 | **Retrofit** | API communication |
 | **LiveData + ViewModel** | State management |
 | **WorkManager** | (Optional) background tasks |
-| **MPAndroidChart** | Hourly temperature line graph |
 | **Lottie** | Animations for splash/setup |
 | **OSMDroid** | Map picker integration |
 | **Coroutines** | Async networking & database |

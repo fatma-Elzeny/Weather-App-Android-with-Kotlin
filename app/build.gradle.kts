@@ -15,8 +15,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"${properties["OPEN_WEATHER_API_KEY"]}\"")
     }
     buildFeatures {
         viewBinding = true
@@ -88,4 +86,8 @@ dependencies {
     implementation ("androidx.work:work-runtime-ktx:2.9.0")
 
     implementation ("com.airbnb.android:lottie:6.3.0")
+
+
+
+
 }
