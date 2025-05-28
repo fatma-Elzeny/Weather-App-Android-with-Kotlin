@@ -73,6 +73,12 @@ AirCast follows the **MVVM (Model-View-ViewModel)** design pattern and clean arc
 - Auto-adapts via `SettingsActivity` or device locale.
 
 ---
+## UMLs (Relation between Different classes)
+
+![Subdirectory Image](images/Home.png)
+![Subdirectory Image](images/Favourite.png)
+![Subdirectory Image](images/Settings.png)
+![Subdirectory Image](images/ALert.png)
 
 ##  Data Source
 
