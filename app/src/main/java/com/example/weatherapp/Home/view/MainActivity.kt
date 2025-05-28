@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
             local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao()),
-            this
+            settingsRepo = SettingsRepository(this)
         )
         val factory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]

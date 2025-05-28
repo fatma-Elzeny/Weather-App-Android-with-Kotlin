@@ -16,6 +16,7 @@ import com.example.weatherapp.BaseActivity
 import com.example.weatherapp.Favourites.view.FavoritesActivity
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.R
+import com.example.weatherapp.Settings.model.SettingsRepository
 import com.example.weatherapp.Settings.view.SettingsActivity
 import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.db.WeatherLocalDataSourceImpl
@@ -40,7 +41,7 @@ class AlertsActivity : BaseActivity() {
         val repository = WeatherRepositoryImpl(
             remote = WeatherRemoteDataSourceImpl(RetrofitClient.api),
             local = WeatherLocalDataSourceImpl(WeatherDatabase.getInstance(this).weatherDao()),
-            this
+            settingsRepo = SettingsRepository(this)
         )
         val factory = AlertsViewModelFactory(repository, application)
         viewModel = ViewModelProvider(this, factory).get(AlertsViewModel::class.java)

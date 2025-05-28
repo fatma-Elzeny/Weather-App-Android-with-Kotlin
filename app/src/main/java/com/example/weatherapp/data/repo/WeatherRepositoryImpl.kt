@@ -15,7 +15,7 @@ import com.google.gson.Gson
 class WeatherRepositoryImpl(
     private val remote: WeatherRemoteDataSource,
     private val local: WeatherLocalDataSource,
-    private val context: Context
+    private val settingsRepo: SettingsRepository
 ) : WeatherRepository {
 
     private val gson = Gson()
@@ -26,8 +26,8 @@ class WeatherRepositoryImpl(
         units: String,
         lang: String
     ): WeatherResponse {
-        val lang = SettingsRepository(context).loadSettings().language
-        val langCode = if (lang == Language.ARABIC) "ar" else "en"
+        val langCode = if (settingsRepo.loadSettings().language == Language.ARABIC) "ar" else "en"
+
 
         return try {
             val response = remote.getWeatherForecast(lat, lon, units, langCode, "0227d528304276aa7b3f837f13e1fd21")
