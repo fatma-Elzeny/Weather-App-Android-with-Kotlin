@@ -98,6 +98,23 @@
                     android:textSize="48sp"
                     android:textStyle="bold"
                     android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/tvFeelsLike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Feels like: --°"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:id="@+id/tvCloudsValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Clouds: --%"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"/>
+
                 <ImageView
                     android:id="@+id/imgWeatherIcon"
                     android:layout_width="64dp"
@@ -289,6 +306,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="12sp" />
                 </LinearLayout>
+
             </GridLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

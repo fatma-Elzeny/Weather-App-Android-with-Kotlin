@@ -7,6 +7,7 @@ import com.example.weatherapp.Settings.model.SettingsRepository
 import com.example.weatherapp.Settings.model.TemperatureUnit
 import com.example.weatherapp.Settings.model.WindSpeedUnit
 import com.example.weatherapp.data.model.City
+import com.example.weatherapp.data.model.Clouds
 import com.example.weatherapp.data.model.Coord
 import com.example.weatherapp.data.model.FavoriteLocation
 import com.example.weatherapp.data.model.ForecastItem
@@ -64,7 +65,8 @@ class WeatherRepositoryImplTest {
                     main = MainData(22.0, 24.0, 60, 1012, 20.0, 26.0),
                     weather = listOf(Weather(800, "Clear", "clear sky", "01d")),
                     wind = Wind(3.5, 100, 0.0),
-                    dateTime = "2025-05-28 15:00:00"
+                    dateTime = "2025-05-28 15:00:00",
+                    Clouds(20)
                 )
             )
         )

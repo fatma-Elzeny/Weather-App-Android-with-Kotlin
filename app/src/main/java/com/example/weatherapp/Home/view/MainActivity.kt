@@ -261,8 +261,26 @@ class MainActivity : AppCompatActivity() {
         }
         binding.tvWindValue.text = windSpeed
         // 🌡️ Feels like temperature
-       //  val feelsLike = if (current.main.feelsLike == 0.0) current.main.temp else current.main.feelsLike
-       // binding.tvFeelsLike.text = getString(R.string.feels_like_format, feelsLike)
+        val feelsLikeTemp = current.main.feelsLike
+        val feelsLikeFormatted = numberFormat.format(feelsLikeTemp.toInt())
+        val feelsLikeUnit = when (settings.temperatureUnit) {
+            TemperatureUnit.CELSIUS -> if (lang == Language.ARABIC) "درجة مئوية" else "°C"
+            TemperatureUnit.FAHRENHEIT -> if (lang == Language.ARABIC) "فهرنهايت" else "°F"
+        }
+        binding.tvFeelsLike.text = if (lang == Language.ARABIC) {
+            "يشعر كـ $feelsLikeFormatted $feelsLikeUnit"
+        } else {
+            "Feels like $feelsLikeFormatted $feelsLikeUnit"
+        }
+
+// ☁️ Clouds percentage
+        val cloudsPercent = current.clouds.all  // assuming cloudiness percentage is here
+        binding.tvCloudsValue.text = if (lang == Language.ARABIC) {
+            "$cloudsPercent% سحب"
+        } else {
+            "Clouds: $cloudsPercent%"
+        }
+
 
 
 

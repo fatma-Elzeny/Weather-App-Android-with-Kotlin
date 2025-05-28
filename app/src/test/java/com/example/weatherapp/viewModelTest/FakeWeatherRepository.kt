@@ -3,6 +3,7 @@ package com.example.weatherapp.viewModelTest
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.weatherapp.data.model.City
+import com.example.weatherapp.data.model.Clouds
 import com.example.weatherapp.data.model.Coord
 import com.example.weatherapp.data.model.FavoriteLocation
 import com.example.weatherapp.data.model.ForecastItem
@@ -24,7 +25,8 @@ class FakeWeatherRepository : WeatherRepository {
                 main = MainData(25.0, 23.0, 65, 1013, 20.0, 28.0),
                 weather = listOf(Weather(1, "Clear", "clear sky", "01d")),
                 wind = Wind(5.0, 180, 6.0),
-                dateTime = "2025-05-28 12:00:00"
+                dateTime = "2025-05-28 12:00:00",
+                Clouds(20)
             )
         )
     )
