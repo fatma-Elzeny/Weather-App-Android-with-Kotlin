@@ -4,13 +4,14 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.db.WeatherDAO
 import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.model.FavoriteLocation
 import kotlinx.coroutines.launch
 
-class FavoritesViewModel(application: Application) : AndroidViewModel(application),
+class FavoritesViewModel(application: Application,private val dao: WeatherDAO = WeatherDatabase.getInstance(application).weatherDao()) : AndroidViewModel(application),
     IFavoritesViewModel {
-    private val dao = WeatherDatabase.getInstance(application).weatherDao()
+
     val favorites: LiveData<List<FavoriteLocation>> = dao.getAllFavorites()
 
     override fun addFavorite(location: FavoriteLocation) = viewModelScope.launch {

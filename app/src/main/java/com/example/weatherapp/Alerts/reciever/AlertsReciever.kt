@@ -39,6 +39,14 @@ class AlertReceiver : BroadcastReceiver() {
             }
             manager.createNotificationChannel(channel)
         }
+        val snoozeIntent = Intent(context, SnoozeReceiver::class.java).apply {
+            putExtra("id", id)
+        }
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context, id + 1, snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val dismissIntent = Intent(context, DismissReceiver::class.java).apply {
             putExtra("id", id)
         }
@@ -46,16 +54,18 @@ class AlertReceiver : BroadcastReceiver() {
             context, id, dismissIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val soundUri = Uri.parse("android.resource://${context.packageName}/{R.raw.weather_alarm}")
+        val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.weather_alarm}")
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setContentTitle("Weather Alert")
             .setContentText("Weather is fine. This is your alert.")
             .setSmallIcon(R.drawable.ic_alert)
-            .setAutoCancel(true)
+            .setAutoCancel(false)
             .setSound(soundUri)
             .addAction(R.drawable.ic_dismiss, "Dismiss", dismissPendingIntent)
+            .addAction(R.drawable.ic_dismiss, "Snooze", snoozePendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH) // Ensures heads-up notification
+            .setOngoing(true)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .apply {
                 if (isAlarm) setDefaults(Notification.DEFAULT_ALL)

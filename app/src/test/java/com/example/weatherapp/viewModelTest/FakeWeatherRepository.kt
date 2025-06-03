@@ -15,7 +15,8 @@ import com.example.weatherapp.data.model.Wind
 import com.example.weatherapp.data.repo.WeatherRepository
 
 class FakeWeatherRepository : WeatherRepository {
-
+    val insertedAlerts = mutableListOf<WeatherAlert>()
+    val deletedAlerts = mutableListOf<WeatherAlert>()
     var shouldFail = false
     var dummyForecast = WeatherResponse(
         city = City(1,"TestCity", Coord(0.0, 0.0), "TestCountry", 0, 0, 0, 0, null),
@@ -41,10 +42,23 @@ class FakeWeatherRepository : WeatherRepository {
     override suspend fun insertFavorite(location: FavoriteLocation) = Unit
     override suspend fun deleteFavorite(location: FavoriteLocation) = Unit
     override fun getAllFavorites(): LiveData<List<FavoriteLocation>> = MutableLiveData(emptyList())
-    override suspend fun insertAlert(alert: WeatherAlert) = Unit
-    override suspend fun deleteAlert(alert: WeatherAlert) = Unit
-    override fun getAllAlerts(): LiveData<List<WeatherAlert>> = MutableLiveData(emptyList())
-    override suspend fun getAllAlertsOnce(): List<WeatherAlert> = emptyList()
+    override fun getAllAlerts(): LiveData<List<WeatherAlert>> {
+        return MutableLiveData(insertedAlerts)
+    }
+
+    override suspend fun getAllAlertsOnce(): List<WeatherAlert> {
+        return insertedAlerts
+    }
+
+    override suspend fun insertAlert(alert: WeatherAlert) {
+        insertedAlerts.add(alert)
+    }
+
+    override suspend fun deleteAlert(alert: WeatherAlert) {
+        deletedAlerts.add(alert)
+        insertedAlerts.remove(alert)
+    }
+
     override suspend fun saveCachedWeather(response: WeatherResponse) = Unit
     override suspend fun getCachedWeatherByCoord(lat: Double, lon: Double): WeatherResponse? = null
     override suspend fun getCachedWeather(city: String): WeatherResponse? = null

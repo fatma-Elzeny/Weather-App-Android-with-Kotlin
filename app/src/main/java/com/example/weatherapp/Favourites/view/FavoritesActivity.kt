@@ -12,16 +12,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherapp.Alerts.view.AlertsActivity
 import com.example.weatherapp.BaseActivity
 import com.example.weatherapp.Favourites.viewmodel.FavoritesViewModel
+import com.example.weatherapp.Favourites.viewmodel.FavoritesViewModelFactory
 import com.example.weatherapp.Home.view.MainActivity
 import com.example.weatherapp.MapPickerActivity
 import com.example.weatherapp.R
 import com.example.weatherapp.Settings.view.SettingsActivity
+import com.example.weatherapp.data.db.WeatherDatabase
 import com.example.weatherapp.data.model.FavoriteLocation
 import com.example.weatherapp.databinding.ActivityFavoritesBinding
 
 class FavoritesActivity : BaseActivity() {
     private lateinit var binding: ActivityFavoritesBinding
-    private val viewModel: FavoritesViewModel by viewModels()
+    private lateinit var factory: FavoritesViewModelFactory
+
+    private val viewModel: FavoritesViewModel by viewModels { factory }
     private lateinit var adapter: FavoritesAdapter
 
     private val mapPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -40,6 +44,9 @@ class FavoritesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFavoritesBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val application = requireNotNull(this).application
+        val dao = WeatherDatabase.getInstance(application).weatherDao()
+        factory = FavoritesViewModelFactory(application, dao)
 
         setupNavigationDrawer()
 

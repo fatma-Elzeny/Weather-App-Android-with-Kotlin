@@ -95,7 +95,7 @@ class WeatherRepositoryImplTest {
         Dispatchers.resetMain()
     }
 
-    // ✅ TEST 1: insertFavorite
+    // TEST 1: insertFavorite
     @Test
     fun insertFavorite_addsLocationToFavoritesList() = runTest {
         val fav = FavoriteLocation(1,"Giza", 29.98, 31.14)
@@ -105,7 +105,7 @@ class WeatherRepositoryImplTest {
         assertTrue(fakeLocal.favorites.contains(fav))
     }
 
-    // ✅ TEST 2: deleteFavorite
+    // TEST 2: deleteFavorite
     @Test
     fun deleteFavorite_removesLocationFromFavoritesList() = runTest {
         val fav = FavoriteLocation(1,"Giza", 29.98, 31.14)
@@ -116,7 +116,7 @@ class WeatherRepositoryImplTest {
         assertFalse(fakeLocal.favorites.contains(fav))
     }
 
-    // ✅ TEST 3: getWeatherForecast returns remote and caches it
+    // TEST 3: getWeatherForecast returns remote and caches it
     @Test
     fun getWeatherForecast_returnsRemoteDataAndCaches() = runTest {
         val result = repository.getWeatherForecast(30.0, 31.0, "metric", "en")
